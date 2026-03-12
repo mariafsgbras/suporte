@@ -1,0 +1,16 @@
+{
+    "host": "178.156.186.246",
+    "username": "ftpadmin",
+    "password": "SGBras794255",
+    "remotePath": "/usr/suporte",
+    "uploadOnSave": false,
+    "syncOnStart": false,
+    "debug" : true,
+    "ignore": [
+        "dataBase",
+        "docs",
+        ".vscode",
+        "node_modules",
+        "logs"
+    ]
+}
