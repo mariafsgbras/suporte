@@ -1,6 +1,6 @@
 'use client';
 
-import { Ticket, TicketStatus } from "@/app/chamados/page";
+import { Ticket, TicketStatus } from "@/app/chamados/ChamadosClient";
 
 type Props = {
   tickets: Ticket[];

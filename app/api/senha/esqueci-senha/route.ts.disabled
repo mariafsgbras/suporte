@@ -1,6 +1,7 @@
 // app/api/auth/esqueci-senha/route.ts
-import { NextResponse } from 'next/server';
+/*import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { db } from '@/lib/db';
 
 export async function POST(req: Request) {
   const { email } = await req.json();
@@ -28,3 +29,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
+*/

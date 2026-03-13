@@ -1,6 +1,6 @@
 'use client';
 
-import { TicketStatus } from "@/app/chamados/page";
+import { TicketStatus } from '@/app/chamados/ChamadosClient';
 
 type Props = {
   searchTerm: string;
