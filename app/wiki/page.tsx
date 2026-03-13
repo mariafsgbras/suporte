@@ -21,12 +21,11 @@ export default function WikiPage() {
             name="SW-403"
             image="/products/sw403mi.png"
             href="https://wiki.sgbras.com/pt-br/produtos/bloqueador"
-           
         />
         <ProductCard 
             name="Galileosky" 
             image="/products/galileosky.png"
-            href="https://wiki.sgbras.com/pt-br/produtos/galileosky"
+            href="https://base.galileosky.com/articles/#!en-documentation/user-manuals"
         />
         <ProductCard
             name="Leitor RFID"

@@ -148,7 +148,7 @@ export function Sidebar() {
         {hasPermission(role, "usuarios") && 
           <MenuItem
             href="/usuarios"
-            label="Cadastro de Usuários"
+            label="Usuários Cadastrados"
             icon={<MdPerson size={20} />}
             collapsed={collapsed}
           />

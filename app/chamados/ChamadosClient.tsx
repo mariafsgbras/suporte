@@ -151,6 +151,7 @@ export default function ChamadosPage() {
             <input
               type="checkbox"
               checked={onlyMine}
+              disabled={statusFilter === 'open'}
               onChange={(e) => setOnlyMine(e.target.checked)}
             />
             <label className="text-sm text-gray-700">
