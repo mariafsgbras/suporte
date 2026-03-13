@@ -42,41 +42,47 @@ export default function ChamadosPage() {
 
   const [limit] = useState(20);
   const [total, setTotal] = useState(0);
+  
+  async function loadTickets() {
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      status: statusFilter,
+      search: searchTerm,
+      onlyMine: onlyMine.toString(),
+    });
+
+    const res = await fetch(`/api/chamados?${params}`);
+    const result = await res.json();
+
+    const mappedTickets: Ticket[] = result.data.map((item: any) => ({
+      id: item.id,
+      product: item.produto,
+      requester: item.solicitante,
+      company: item.empresa,
+      cnpj: item.cnpj,
+      responsible: item.responsavel ?? '-',
+      description: item.descricao ?? '',
+      status: item.status,
+      open_date: item.created_at,
+      closed_date: item.closed_at ?? null,
+      updated_at: item.updated_at,
+    }));
+
+    setTickets(mappedTickets);
+    setTotal(result.total);
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function loadTickets() {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-        status: statusFilter,
-        search: searchTerm,
-        onlyMine: onlyMine.toString(),
-      });
-
-      const res = await fetch(`/api/chamados?${params}`);
-      const result = await res.json();
-
-      const mappedTickets: Ticket[] = result.data.map((item: any) => ({
-        id: item.id,
-        product: item.produto,
-        requester: item.solicitante,
-        company: item.empresa,
-        cnpj: item.cnpj,
-        responsible: item.responsavel ?? '-',
-        description: item.descricao ?? '',
-        status: item.status,
-        open_date: item.created_at,
-        closed_date: item.closed_at ?? null,
-        updated_at: item.updated_at,
-      }));
-
-      setTickets(mappedTickets);
-      setTotal(result.total);
-      setLoading(false);
-    }
     loadTickets();
-  }, [page, statusFilter, searchTerm, onlyMine]);
+    const interval = setInterval(() => {
+      loadTickets();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [page, statusFilter, onlyMine, searchTerm]);
 
   useEffect(() => {
     setPage(1);
@@ -127,6 +133,12 @@ export default function ChamadosPage() {
       return statusLabelMapPlural[statusFilter];      
     }
   }
+
+  useEffect(() => {
+    if (statusFilter === 'open') {
+      setOnlyMine(false);
+    }
+  }, [statusFilter]);
   
   return (
     <Layout>

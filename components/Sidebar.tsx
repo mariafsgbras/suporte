@@ -98,7 +98,10 @@ export function Sidebar() {
         </button>
 
         <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
+          onClick={async () => {
+            await signOut({ redirect: false });
+            router.push('/login');
+          }}
           className={`
             mt-2 flex items-center gap-2 text-sm text-gray-500
             hover:bg-[#3f7a49] hover:text-white rounded px-2 py-1

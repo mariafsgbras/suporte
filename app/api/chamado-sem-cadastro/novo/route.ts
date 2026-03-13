@@ -55,8 +55,7 @@ export async function POST(req: Request) {
         status,
         descricao,
         created_at,
-        updated_at
-      ) VALUES (?, ?, ?, NULL, 'open', ?, NOW(), NOW())
+      ) VALUES (?, ?, ?, NULL, 'open', ?, NOW())
       `,
       [
         empresa_id,

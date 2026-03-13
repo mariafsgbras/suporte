@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
         p.nome LIKE ? OR
         e.nome LIKE ? OR
         e.cnpj LIKE ? OR
+        r.nome LIKE ? OR
         c.descricao LIKE ?
       )
     `);

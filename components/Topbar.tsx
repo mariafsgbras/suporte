@@ -17,12 +17,12 @@ export function Topbar() {
           priority
         />
         <div className="font-semibold pl-4">
-          SGBras Suporte
+          Suporte SGBras 
         </div>
       </div>
       
       <button 
-        onClick={() => router.push('chamados/novo')}
+        onClick={() => router.push('/chamados/novo')}
         className="bg-white text-[#3f7a49] px-3 py-1 rounded text-sm">
         Abrir Novo Chamado
       </button>

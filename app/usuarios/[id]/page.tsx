@@ -186,18 +186,16 @@ export default function UserPage() {
         <Info label="Email" value={user.email} />
         <Info label="Função" value={user.role} />
         <Info label="Telefone" value={user.phone} />
-        {editing && (
-          <div>
-            <span className="text-sm text-gray-500">Ativo?</span>
-            <div className="mt-1">
-              <input
-                type="checkbox"
-                checked={active === 1}
-                onChange={(e) => setActive(e.target.checked ? 1 : 0)}
-                className="w-4 h-4"
-              />
-            </div>
-          </div>
+        {editing && session?.user.role === 'admin' && (
+          <label className='flex items-center gap-2 text-sm text-gray-500'>
+            <input
+              type="checkbox"
+              checked={active === 1}
+              onChange={(e) => setActive(e.target.checked ? 1 : 0)}
+              className="w-4 h-4"
+            />
+            Ativo?
+          </label>
         )}
       </div>
   
