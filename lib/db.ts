@@ -12,9 +12,10 @@ export const db = mysql.createPool({
 import mysql from 'mysql2/promise';
 
 export const db = mysql.createPool({
-  host: '178.156.186.246',
-  user: 'root',
-  password: 'NCKkitRnLikdJEvRsWAq03062025',
+  host: '127.0.0.1',
+  port: 3806,
+  user: 'suporte',
+  password: 'Sgbras2026#',
   database: 'suporte',
   waitForConnections: true,
   connectionLimit: 10,

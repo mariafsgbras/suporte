@@ -17,10 +17,10 @@ export async function GET(req: NextRequest) {
 
   const page = Number(searchParams.get('page') ?? 1);
   const limit = Number(searchParams.get('limit') ?? 20);
+  
   const status = searchParams.get('status');
   const search = searchParams.get('search');
   const onlyMine = searchParams.get('onlyMine');
-
   const offset = (page - 1) * limit;
 
   let baseQuery = `
@@ -56,11 +56,9 @@ export async function GET(req: NextRequest) {
         p.nome LIKE ? OR
         e.nome LIKE ? OR
         e.cnpj LIKE ? OR
-        r.nome LIKE ? OR
         c.descricao LIKE ?
       )
     `);
-
     const searchTerm = `%${search}%`;
     params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
   }
