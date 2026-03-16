@@ -75,13 +75,12 @@ export function TicketsTable({ tickets, onRowClick }: Props) {
               <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.responsible}</td>
               <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.description}</td>
               <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.open_date)}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.updated_at)}</td>
+              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.updated_at ?? null)}</td>
               <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.closed_date ?? null)}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-    
   );
 }

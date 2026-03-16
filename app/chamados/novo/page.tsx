@@ -75,6 +75,10 @@ export default function NovoChamadoPage() {
             Sexta-feira: 07h às 16h
           </p>
 
+          <p className="text-sm text-gray-700">
+            <strong>* Horário de Brasília </strong>
+          </p>
+
           <button
             onClick={() => router.push('/chamados')}
             className="mt-4 px-4 py-2 bg-[#3f7a49] text-white rounded"

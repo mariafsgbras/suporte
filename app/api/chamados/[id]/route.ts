@@ -40,6 +40,7 @@ export async function GET(
       c.descricao AS description,
       c.status,
       c.created_at AS opened_at,
+      c.updated_at,
       c.closed_at
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id

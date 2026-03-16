@@ -188,6 +188,9 @@ export default function NovoChamadoSemCadastroPage() {
               Segunda à quinta: 07h às 17h<br></br>
               Sexta-feira: 07h às 16h
             </p>
+            <p className="text-sm text-gray-700">
+              <strong>* Horário de Brasília </strong>
+            </p>
             <p className="text-sm text-[#3f7a49]-400">
               Para visualizar o andamento dos chamados, é necessário criar uma conta.
             </p>

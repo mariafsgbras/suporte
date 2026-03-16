@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#efefef] flex flex-col">
       <header className="h-14 bg-[#3f7a49] flex items-center px-6 text-white font-semibold">
-        SGBras Suporte
+        Suporte SGBras
       </header>
 
       <main className="flex flex-1 items-center justify-center px-6">

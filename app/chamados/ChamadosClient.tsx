@@ -20,7 +20,7 @@ export type Ticket = {
   status: TicketStatus;
   open_date: string;
   closed_date?: string;
-  updated_at: string;
+  updated_at?: string;
 };
 
 export default function ChamadosPage() {
@@ -67,7 +67,7 @@ export default function ChamadosPage() {
       status: item.status,
       open_date: item.created_at,
       closed_date: item.closed_at ?? null,
-      updated_at: item.updated_at,
+      updated_at: item.updated_at ?? null,
     }));
 
     setTickets(mappedTickets);

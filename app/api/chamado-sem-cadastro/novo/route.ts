@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         responsavel_id,
         status,
         descricao,
-        created_at,
+        created_at
       ) VALUES (?, ?, ?, NULL, 'open', ?, NOW())
       `,
       [
