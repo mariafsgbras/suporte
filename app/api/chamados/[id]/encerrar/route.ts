@@ -57,12 +57,14 @@ export async function POST(
       c.status,
       c.created_at AS opened_at,
       c.updated_at,
-      c.closed_at
+      c.closed_at,
+      t.tipo AS atendimento_tipo
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id
     JOIN solicitantes s ON s.id = c.solicitante_id
     LEFT JOIN usuarios r ON r.id = c.responsavel_id
     JOIN produtos p ON p.id = c.produto_id
+    LEFT JOIN classificacao t ON t.id = c.classificacao_id
     WHERE c.id = ?
     `,
     [chamadoId]

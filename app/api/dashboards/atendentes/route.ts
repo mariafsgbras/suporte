@@ -8,6 +8,7 @@ export async function GET() {
       COUNT(*) AS total
     FROM chamados c
     LEFT JOIN usuarios r ON r.id = c.responsavel_id
+    WHERE r.ativo = 1 AND r.id <> 9
     GROUP BY r.nome
     ORDER BY responsavel
   `);

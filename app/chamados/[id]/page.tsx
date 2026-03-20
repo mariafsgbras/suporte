@@ -27,6 +27,9 @@ type Ticket = {
   closed_at?: string | null;
   updated_at: string;
   status: TicketStatus;
+  atendimento_tipo: string | null;
+  responsavel_id: number;
+  classificacao_id: number;
 };
 
 type Comment = {
@@ -40,6 +43,7 @@ export default function ChamadoPage() {
   const { data: session } = useSession();
   const isCliente = session?.user.role === "cliente";
   const hasActions = !isCliente;
+
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -48,17 +52,25 @@ export default function ChamadoPage() {
   const from = searchParams.get('from');
 
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [type, setType] = useState<string>('');
+  const [novoResponsavel, setNovoResponsavel] = useState<string>('');
+
   const [error, setError] = useState<string | null>(null);
-  const [showCommentBox, setShowCommentBox] = useState(false);
+
+  const [loading, setLoading] = useState(true);
   const [assuming, setAssuming] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [showCloseModal, setShowCloseModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  const [showCommentBox, setShowCommentBox] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
-  const [commentToast, setCommentToast] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [editToast, setEditToast] = useState(false);
+  const [showTypeMessage, setShowTypeMessage] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -91,6 +103,17 @@ export default function ChamadoPage() {
     fetchComments();
   }, [id]);
 
+  useEffect(() => {
+    if (editing && ticket) {
+      setNovoResponsavel(
+        ticket.responsavel_id ? String(ticket.responsavel_id) : ''
+      );
+      setType(
+        ticket.classificacao_id ? String(ticket.classificacao_id) : ''
+      );
+    }
+  }, [editing, ticket]);
+
   if (loading) {
     return (
       <Layout>
@@ -110,10 +133,22 @@ export default function ChamadoPage() {
   async function handleAssume(){
     if (!session || isCliente) return;
 
+    if(!type) {
+      setShowTypeMessage(true);
+      //setShowCloseModal(false);
+      return;
+    }
+
     try{
       setAssuming(true);
       const res = await fetch(`/api/chamados/${id}/assumir`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tipoAtendimento: Number(type),
+        }),
       });
 
       if(!res.ok){
@@ -185,6 +220,43 @@ export default function ChamadoPage() {
     }
   }
 
+  async function handleEdit() {
+    if (!editing) {
+      setEditing(true);
+      setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
+      setType(String(ticket?.classificacao_id ?? ''));
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/chamados/${id}/editar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...(novoResponsavel && { responsavel_id: Number(novoResponsavel) }),
+          ...(type && { classificacao_id: Number(type) })
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      const updated = await res.json();
+
+      setTicket(updated);
+      setEditing(false);
+      setEditToast(true);
+      setTimeout(() => setEditToast(false), 3000);
+    } catch {
+      alert('Erro ao salvar alterações');
+    }
+  }
+
+  function handleCancel() {
+    setEditing(false);
+    setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
+    setType(String(ticket?.classificacao_id ?? ''));
+  }
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -215,7 +287,12 @@ export default function ChamadoPage() {
               onAddComment={handleAddComment}
               assuming={assuming}
               closing={closing}
+              onEdit={handleEdit}
+              canEdit={!isCliente}
+              editing={editing}
+              onCancel={handleCancel}
             />
+            
           )}
         </div>
 
@@ -227,7 +304,29 @@ export default function ChamadoPage() {
           <Info label="Solicitante" value={ticket.requester} />
           <Info label="Data de Fechamento" value={formatDateTime(ticket.closed_at ?? '-')} />
           <Info label="Email" value={ticket.requester_email} />
-          <Info label="Responsável" value={ticket.responsible ?? '-'} /> 
+          {!editing && (
+            <Info label="Responsável" value={ticket.responsible ?? '-'} /> 
+          )}
+          {editing && (
+            <div>  
+              <h3 className="text-sm text-gray-500">Responsável</h3>
+              <select
+                value={novoResponsavel}
+                onChange={(e) => setNovoResponsavel(e.target.value)}
+                className="border rounded p-2 text-gray-600 text-sm"
+              >
+                <option value={ticket.responsavel_id}>
+                  Atual: {ticket.responsible}
+                </option>
+                <option value="5">Arthur Santos</option>
+                <option value="6">João Pedro Alves</option>
+                <option value="3">João Pedro Morais</option>
+                <option value="1">Maria Fernanda Rabelo</option>
+                <option value="2">Matheus Campos</option>
+              </select>
+
+            </div>  
+          )}
           <Info label="Telefone" value={ticket.requester_phone} />
         </div>
 
@@ -235,8 +334,56 @@ export default function ChamadoPage() {
           <h3 className="font-semibold mb-2 text-gray-700">Produto</h3>
           <p className="text-gray-700 text-sm pb-4">{ticket.product}</p>
           <h3 className="font-semibold mb-2 text-gray-700">Solicitação</h3>
-          <p className="text-gray-700 text-sm">{ticket.description}</p>
-        </div>
+          <p className="text-gray-700 text-sm pb-4">{ticket.description}</p>
+          {hasActions && ticket.status === 'open' &&(
+            <div>  
+              <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento
+                <span className='text-red-500'> *</span>
+              </h3>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="border rounded p-2 text-gray-600 text-sm"
+              >
+                <option value="">Selecione</option>
+                <option value="1">Configuração</option>
+                <option value="2">Erro</option>
+                <option value="7">Dúvida</option>
+                <option value="3">Instalação</option>
+                <option value="6">Plataforma</option>
+                <option value="4">Script</option>
+                <option value="5">Treinamento</option>
+              </select>
+            </div>  
+          )} 
+          {hasActions && ticket.status !== 'open' && !editing && (
+            <div>  
+              <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento</h3> 
+              <p className="text-gray-700 text-sm pb-1">{ticket.atendimento_tipo ?? '-'}</p>
+            </div>  
+          )} 
+          {hasActions && editing && ticket.status == 'in_progress' && (
+            <div>  
+              <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento</h3>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="border rounded p-2 text-gray-600 text-sm"
+              >
+                <option value={ticket.classificacao_id}>
+                  Atual: {ticket.atendimento_tipo}
+                </option>
+                <option value="1">Configuração</option>
+                <option value="2">Erro</option>
+                <option value="7">Dúvida</option>
+                <option value="3">Instalação</option>
+                <option value="6">Plataforma</option>
+                <option value="4">Script</option>
+                <option value="5">Treinamento</option>
+              </select>
+            </div>  
+          )}
+        </div>    
 
         {hasActions && (
           <div className="bg-white p-4 rounded border">
@@ -329,6 +476,18 @@ export default function ChamadoPage() {
         onOk={() => setShowWarningModal(false)}
       />
 
+      <Toast
+        show={editToast}
+        message={`Alterações salvas com sucesso!`}
+      />
+
+      <WarningModal
+        open={showTypeMessage}
+        title="Aviso"
+        message={'Informe o tipo de atendimento para assumir o chamado.'}
+        okText='Ok'
+        onOk={() => setShowTypeMessage(false)}
+      />
     </Layout>
   );
 }

@@ -24,7 +24,10 @@ export type Ticket = {
 };
 
 export default function ChamadosPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const isCliente = session?.user.role === "cliente";
+  const hasActions = !isCliente;
+
   const searchParams = useSearchParams();
 
   const router = useRouter();
@@ -159,17 +162,19 @@ export default function ChamadosPage() {
             {ticketsCount} {countLabel()}
           </p>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={onlyMine}
-              disabled={statusFilter === 'open'}
-              onChange={(e) => setOnlyMine(e.target.checked)}
-            />
-            <label className="text-sm text-gray-700">
-              Mostrar apenas meus chamados
-            </label>
-          </div>
+          {hasActions && (
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={onlyMine}
+                disabled={statusFilter === 'open'}
+                onChange={(e) => setOnlyMine(e.target.checked)}
+              />
+              <label className="text-sm text-gray-700">
+                Mostrar apenas meus chamados
+              </label>
+            </div>
+          )}
         </div>
       </div>
       

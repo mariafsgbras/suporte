@@ -12,7 +12,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        console.log("CREDENTIALS:", credentials);
         if (!credentials?.email || !credentials?.password){
           console.log("❌ Email ou senha não vieram");
           return null;
@@ -25,8 +24,6 @@ export const authOptions: NextAuthOptions = {
           WHERE u.email = ?
           LIMIT 1
         `, [credentials.email]);
-
-        console.log("USUÁRIO DO BANCO:", rows);
 
         const usuario = rows[0];
         if (!usuario) {

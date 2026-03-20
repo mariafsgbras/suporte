@@ -32,6 +32,18 @@ export async function POST(req: Request) {
 
     if (rows.length) {
       solicitante_id = rows[0].id;
+
+      await db.query(
+        `
+        UPDATE solicitantes
+        SET
+          nome = ?,
+          telefone = ?,
+          updated_at = NOW()
+        WHERE id = ?
+        `,
+        [nome, telefone, solicitante_id]
+      );
     } else {
       const [result]: any = await db.query(
         `

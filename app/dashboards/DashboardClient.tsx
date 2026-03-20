@@ -52,15 +52,15 @@ export default function DashboardsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const topClients = clientDashboard.map(client => ({
-      ...client,
-      empresa: client.empresa
-        ? client.empresa.split(' ').slice(0, 2).join(' ')
-        : 'Sem nome'
-    }));
+    ...client,
+    empresa: client.empresa
+      ? client.empresa.split(' ').slice(0, 2).join(' ')
+      : 'Sem nome'
+  }));
 
   const COLORS = [
-    '#2563eb',
     '#16a34a',
+    '#2563eb',
     '#dc2626',
     '#ca8a04',
     '#7c3aed',
@@ -143,7 +143,14 @@ export default function DashboardsPage() {
                 />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="total" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  {responsibleDashboard.map((_,index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -153,7 +160,6 @@ export default function DashboardsPage() {
           <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
             Quantidade Total de Chamados Por Produto
           </h1>
-
           <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={productDashboard}>
@@ -194,7 +200,14 @@ export default function DashboardsPage() {
                 <XAxis type="number" />
                 <YAxis dataKey="empresa" type="category" width={150} />
                  <Tooltip />
-                <Bar dataKey="total" />
+                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  {clientDashboard.map((_,index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>

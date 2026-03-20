@@ -19,6 +19,5 @@ export async function GET() {
     total: Number(row.total),
   }));
 
-  console.log(formatted);
   return NextResponse.json(formatted);
 }

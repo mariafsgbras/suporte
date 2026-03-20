@@ -48,7 +48,6 @@ export default function LoginPage() {
             </h1>
 
             <form onSubmit={handleLogin} className="space-y-4 max-w-sm">
-
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Email</label>
                 <input
@@ -88,25 +87,24 @@ export default function LoginPage() {
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
-
-              <div className='mt-8 '>
-                <h1 className="text-sm font-semibold text-gray-600 justify mb-1">
-                  Ainda não possui uma conta? Clique abaixo para criar.
-                </h1>
-                <button
-                  onClick={() => router.push('cadastro/empresa')}
-                  className="w-full bg-[#3f7a49] text-white p-2 rounded disabled:opacity-50 mb-2"
-                >
-                  Criar conta
-                </button>
-                <button
-                  onClick={() => router.push('chamado-sem-cadastro/novo')}
-                  className="w-full bg-[#efefef] border border-[#3f7a49] text-[#3f7a49] p-2 rounded disabled:opacity-50"
-                >
-                  Abrir chamado sem cadastro
-                </button>
-              </div>
             </form>
+            <div className='mt-8 max-w-sm'>
+              <h1 className="text-sm font-semibold text-gray-600 justify mb-1">
+                Ainda não possui uma conta? Clique abaixo para criar.
+              </h1>
+              <button
+                onClick={() => router.push('cadastro/empresa')}
+                className="w-full bg-[#3f7a49] text-white p-2 rounded disabled:opacity-50 mb-2"
+              >
+                Criar conta
+              </button>
+              <button
+                onClick={() => router.push('chamado-sem-cadastro/novo')}
+                className="w-full bg-[#efefef] border border-[#3f7a49] text-[#3f7a49] p-2 rounded disabled:opacity-50"
+              >
+                Abrir chamado sem cadastro
+              </button>
+            </div>
           </div>
         </div>
       </main>

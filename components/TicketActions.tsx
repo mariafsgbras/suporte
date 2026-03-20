@@ -7,6 +7,10 @@ type Props = {
   onAddComment: () => void;
   assuming?: boolean;
   closing?: boolean;
+  onEdit: () => void;
+  canEdit?: boolean;
+  editing?: boolean;
+  onCancel?: () => void;
 };
 
 export function TicketActions({
@@ -15,7 +19,11 @@ export function TicketActions({
   onClose,
   onAddComment,
   assuming,
-  closing
+  closing,
+  onEdit,
+  canEdit,
+  editing,
+  onCancel
 }: Props) {
   if (status === "closed") return null;
 
@@ -31,6 +39,26 @@ export function TicketActions({
         >
           {assuming ? 'Assumindo...' : 'Assumir'}
         </button>
+      )}
+
+      {canEdit && !editing && status === 'in_progress' && (
+        <button
+          onClick={onEdit}
+          className="px-4 py-1.5 bg-[#3f7a49] text-white rounded text"
+        >
+          Editar
+        </button>
+      )}
+
+      {canEdit && editing && (
+        <>
+          <button onClick={onEdit} className="px-4 py-2 rounded bg-blue-600 text-white">
+            Salvar
+          </button>
+          <button onClick={onCancel} className="px-4 py-2 rounded bg-red-600 order">
+            Cancelar
+          </button>
+        </>
       )}
 
       {status === "in_progress" && (
