@@ -48,6 +48,7 @@ export async function POST(
     SELECT
       c.id,
       e.nome AS company,
+      e.cnpj AS cnpj,
       s.nome AS requester,
       s.email AS requester_email,
       s.telefone AS requester_phone,

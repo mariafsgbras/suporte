@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         UPDATE solicitantes
         SET
           nome = CASE 
-            WHEN nome = '' OR nome IS NULL THEN ?
+            WHEN nome = ' ' OR nome IS NULL THEN ?
             ELSE nome
           END,
           telefone = ?,
