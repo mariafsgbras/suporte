@@ -133,11 +133,10 @@ export default function ChamadoPage() {
   async function handleAssume(){
     if (!session || isCliente) return;
 
-    if(!type) {
+    /*if(!type) {
       setShowTypeMessage(true);
-      //setShowCloseModal(false);
       return;
-    }
+    }*/
 
     try{
       setAssuming(true);
@@ -220,7 +219,7 @@ export default function ChamadoPage() {
     }
   }
 
-  async function handleEdit() {
+  /*async function handleEdit() {
     if (!editing) {
       setEditing(true);
       setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
@@ -255,7 +254,7 @@ export default function ChamadoPage() {
     setEditing(false);
     setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
     setType(String(ticket?.classificacao_id ?? ''));
-  }
+  }*/
 
   return (
     <Layout>
@@ -287,10 +286,10 @@ export default function ChamadoPage() {
               onAddComment={handleAddComment}
               assuming={assuming}
               closing={closing}
-              onEdit={handleEdit}
+              //onEdit={handleEdit}
               canEdit={!isCliente}
               editing={editing}
-              onCancel={handleCancel}
+              //onCancel={handleCancel}
             />
             
           )}
@@ -307,7 +306,7 @@ export default function ChamadoPage() {
           {!editing && (
             <Info label="Responsável" value={ticket.responsible ?? '-'} /> 
           )}
-          {editing && (
+          {/*{editing && (
             <div>  
               <h3 className="text-sm text-gray-500">Responsável</h3>
               <select
@@ -326,7 +325,7 @@ export default function ChamadoPage() {
               </select>
 
             </div>  
-          )}
+          )}*/}
           <Info label="Telefone" value={ticket.requester_phone} />
         </div>
 
@@ -335,7 +334,7 @@ export default function ChamadoPage() {
           <p className="text-gray-700 text-sm pb-4">{ticket.product}</p>
           <h3 className="font-semibold mb-2 text-gray-700">Solicitação</h3>
           <p className="text-gray-700 text-sm pb-4">{ticket.description}</p>
-          {hasActions && ticket.status === 'open' &&(
+          {/*{hasActions && ticket.status === 'open' &&(
             <div>  
               <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento
                 <span className='text-red-500'> *</span>
@@ -355,8 +354,8 @@ export default function ChamadoPage() {
                 <option value="5">Treinamento</option>
               </select>
             </div>  
-          )} 
-          {hasActions && ticket.status !== 'open' && !editing && (
+          )} */}
+          {/*{hasActions && ticket.status !== 'open' && !editing && (
             <div>  
               <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento</h3> 
               <p className="text-gray-700 text-sm pb-1">{ticket.atendimento_tipo ?? '-'}</p>
@@ -382,7 +381,7 @@ export default function ChamadoPage() {
                 <option value="5">Treinamento</option>
               </select>
             </div>  
-          )}
+          )}*/}
         </div>    
 
         {hasActions && (
@@ -476,18 +475,18 @@ export default function ChamadoPage() {
         onOk={() => setShowWarningModal(false)}
       />
 
-      <Toast
+      {/*<Toast
         show={editToast}
         message={`Alterações salvas com sucesso!`}
-      />
+      />*/}
 
-      <WarningModal
+      {/*<WarningModal
         open={showTypeMessage}
         title="Aviso"
         message={'Informe o tipo de atendimento para assumir o chamado.'}
         okText='Ok'
         onOk={() => setShowTypeMessage(false)}
-      />
+      />*/}
     </Layout>
   );
 }
