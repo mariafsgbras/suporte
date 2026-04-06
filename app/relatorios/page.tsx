@@ -14,19 +14,14 @@ export default function FormsPage() {
       rota: '/relatorios/chamados'
     },
     {
-      titulo: 'Relatório de Chamados por Empresa',
-      descricao: 'Lista agrupada por empresa',
-      rota: '/relatorios/empresas'
-    },
-    {
-      titulo: 'Relatório de Produtividade por Responsável',
-      descricao: 'Lista de chamados atendidos por usuário',
-      rota: '/relatorios/produtividade'
+      titulo: 'Relatório Geral Mensal',
+      descricao: 'Relatório geral de chamados por mês',
+      rota: '/relatorios/mensal'
     },
     {
       titulo: 'Relatório de Tempo de Atendimento',
-      descricao: 'Lista de chamados e respectivos tempos de atendimento',
-      rota: '/relatorios/tempo_atendimento'
+      descricao: 'Relatório de análise de tempo de atendimento',
+      rota: '/relatorios/tempo'
     },
   ]
 

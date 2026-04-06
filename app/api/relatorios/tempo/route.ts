@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const empresa = searchParams.get('empresa');
     const responsavel = searchParams.get('responsavel');
     const produto = searchParams.get('produto');
+    const status = searchParams.get('status');
 
     if (!inicio || !fim) {
       return NextResponse.json(
@@ -23,13 +24,15 @@ export async function GET(req: NextRequest) {
       SELECT 
         c.id,
         e.nome AS empresa,
-        s.nome AS solicitante,
         p.nome AS produto,
         u.nome AS responsavel,
         c.status,
         c.created_at,
+        c.updated_at,
         c.closed_at,
-        TIMESTAMPDIFF(MINUTE, c.created_at, c.closed_at) AS tempo_minutos
+        SEC_TO_TIME(TIMESTAMPDIFF(SECOND, c.created_at, c.updated_at)) AS tempo_inicio,
+        SEC_TO_TIME(TIMESTAMPDIFF(SECOND, c.updated_at, c.closed_at)) AS tempo_final,
+        SEC_TO_TIME(TIMESTAMPDIFF(SECOND, c.created_at, c.closed_at)) AS tempo_total
       FROM chamados c
       LEFT JOIN usuarios u ON u.id = c.responsavel_id
       LEFT JOIN empresas e ON e.id = c.empresa_id
@@ -39,14 +42,17 @@ export async function GET(req: NextRequest) {
       AND u.nome like ?
       AND p.nome like ?
       AND DATE(c.created_at) BETWEEN ? AND ?
+      AND (? = '' OR c.status = ?)
       ORDER BY e.nome DESC
       `,
-      [`%${empresa}%`, `%${responsavel}%`, `%${produto}%`, inicio, fim]
+      [`%${empresa}%`, `%${responsavel}%`, `%${produto}%`, inicio, fim, status, status]
     );
 
     const formatted = rows.map((row: any) => ({
       ...row,
-      tempo_minutos: row.tempo_minutos ?? 0
+      tempo_inicio: row.tempo_inicio ?? 0,
+      tempo_final: row.tempo_final ?? 0,
+      tempo_total: row.tempo_total ?? 0
     }));
 
     return NextResponse.json(formatted);

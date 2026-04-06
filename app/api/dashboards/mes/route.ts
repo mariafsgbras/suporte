@@ -14,7 +14,7 @@ export async function GET() {
         DATE_FORMAT(created_at, '%Y-%m') AS mes,
         COUNT(*) AS total
     FROM chamados
-    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+    WHERE created_at >= DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 12 MONTH)
     GROUP BY mes
     ORDER BY mes
   `);

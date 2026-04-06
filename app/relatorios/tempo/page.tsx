@@ -16,11 +16,14 @@ interface Chamado {
   responsavel: string,
   status: string,
   created_at: string,
+  updated_at: string | null,
   closed_at: string | null,
-  tempo_minutos: number,
+  tempo_inicio: number,
+  tempo_final: number,
+  tempo_total: number
 }
 
-export default function RelatorioChamados() {
+export default function RelatorioTempoAtendimento() {
   const [inicio, setInicio] = useState('');
   const [fim, setFim] = useState('');
   const [empresa, setEmpresa] = useState('');
@@ -48,7 +51,7 @@ export default function RelatorioChamados() {
     setLoading(true);
 
     const res = await fetch(
-      `/api/relatorios/chamados?inicio=${inicio}&fim=${fim}&empresa=${empresa}&responsavel=${responsavel}&produto=${produto}&status=${status}`
+      `/api/relatorios/tempo?inicio=${inicio}&fim=${fim}&empresa=${empresa}&responsavel=${responsavel}&produto=${produto}&status=${status}`
     );
 
     const json = await res.json();
@@ -89,7 +92,7 @@ export default function RelatorioChamados() {
             <MdArrowBack size={18} className="text-gray-600 hover:bg-[#3f7a49] hover:text-white rounded" />
           </button>
           <h1 className="text-xl font-semibold text-gray-800 mb-2">
-            Relatório de Chamados
+            Relatório de Tempo de Atendimento
           </h1>
         </div>
         <div className='flex items-center gap-3'>
@@ -193,15 +196,17 @@ export default function RelatorioChamados() {
         <table className='w-full border-collapse min-w-[1200px] text-gray-400'>
           <thead>
             <tr className='bg-gray-100 text-gray-600'>
-              <th className='border border-gray-300 px-4 py-2'>Qtde</th>
               <th className='border border-gray-300 px-4 py-2'>ID</th>
               <th className='border border-gray-300 px-4 py-2'>Empresa</th>
-              <th className='border border-gray-300 px-4 py-2'>Solicitante</th>
               <th className='border border-gray-300 px-4 py-2'>Produto</th>
               <th className='border border-gray-300 px-4 py-2'>Responsável</th>
               <th className='border border-gray-300 px-4 py-2'>Status</th>
               <th className='border border-gray-300 px-4 py-2'>Abertura</th>
+              <th className='border border-gray-300 px-4 py-2'>Início Atendimento</th>
               <th className='border border-gray-300 px-4 py-2'>Fechamento</th>
+              <th className='border border-gray-300 px-4 py-2'>Tempo Início Atendimento</th>
+              <th className='border border-gray-300 px-4 py-2'>Tempo Finalização do Atendimento</th>
+              <th className='border border-gray-300 px-4 py-2'>Tempo Total do Atendimento</th>
             </tr>
           </thead>
 
@@ -211,10 +216,8 @@ export default function RelatorioChamados() {
                 key={item.id}
                 className='h-12 cursor-pointer text-gray-400 bg-gray-50'
               >
-                <td className='px-4 whitespace-nowrap border border-gray-300'>{index + 1}</td>
                 <td className='px-4 whitespace-nowrap border border-gray-300'>{item.id}</td>
                 <td className='border border-gray-300 px-4 py-2'>{item.empresa}</td>
-                <td className='border border-gray-300 px-4 py-2'>{item.solicitante}</td>
                 <td className='border border-gray-300 px-4 py-2'>{item.produto}</td>
                 <td className='border border-gray-300 px-4 py-2'>{item.responsavel ?? 'Sem responsável'}</td>
                 <td className='border border-gray-300 px-4 py-2'>
@@ -226,10 +229,18 @@ export default function RelatorioChamados() {
                 </td>
                 <td className='border border-gray-300 px-4 py-2'>{new Date(item.created_at).toLocaleString()}</td>
                 <td className='border border-gray-300 px-4 py-2'>
+                    {item.updated_at
+                        ? new Date(item.updated_at).toLocaleString()
+                        : 'Aberto'}
+                    </td>
+                <td className='border border-gray-300 px-4 py-2'>
                   {item.closed_at
                     ? new Date(item.closed_at).toLocaleString()
                     : 'Em andamento'}
                 </td>
+                <td className='border border-gray-300 px-4 py-2'>{item.tempo_inicio}</td>
+                <td className='border border-gray-300 px-4 py-2'>{item.tempo_final}</td>
+                <td className='border border-gray-300 px-4 py-2'>{item.tempo_total}</td>
               </tr>
             ))}
           </tbody>

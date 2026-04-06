@@ -96,7 +96,6 @@ export function Sidebar() {
           <MdSyncLock size={18} />
           {!collapsed && 'Alterar senha'}
         </button>
-
         <button
           onClick={async () => {
             await signOut({ redirect: false });
@@ -111,6 +110,9 @@ export function Sidebar() {
           <MdExitToApp size={18} />
           {!collapsed && 'Sair'}
         </button>
+        <p className='text-sm text-gray-300 mt-3'>
+          Versão: 1.0.0
+        </p>
       </div>
 
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
@@ -164,7 +166,6 @@ export function Sidebar() {
             collapsed={collapsed}
           />
         }
-        
       </nav>
     </aside>
   );

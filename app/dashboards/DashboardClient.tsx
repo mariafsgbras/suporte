@@ -3,6 +3,7 @@
 import { Layout } from "@/components/Layout";
 import { useEffect, useState } from "react";
 import {
+  LabelList,
   LineChart,
   Line,
   BarChart,
@@ -142,8 +143,9 @@ export default function DashboardsPage() {
                   height={75}
                 />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="total" position="top" />
                   {responsibleDashboard.map((_,index) => (
                       <Cell
                         key={`cell-${index}`}
@@ -171,8 +173,9 @@ export default function DashboardsPage() {
                   height={80}
                 />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="total" position="top" />
                   {productDashboard.map((_,index) => (
                     <Cell
                       key={`cell-${index}`}

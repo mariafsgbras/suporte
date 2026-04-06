@@ -67,10 +67,16 @@ export async function POST(req: Request) {
       await db.query(
         `
         UPDATE solicitantes
-        SET usuario_id = ?
+        SET 
+          usuario_id = ?,
+          nome = CASE
+            WHEN TRIM(nome) = '' OR nome IS NULL THEN ?
+            ELSE nome
+          END,
+          telefone = COALESCE(telefone, ?)
         WHERE id = ?
         `,
-        [usuario_id, solicitante.id]
+        [usuario_id, nome, telefone, solicitante.id]
       );
     } else {
       await db.query(
@@ -87,17 +93,6 @@ export async function POST(req: Request) {
         [empresa_id, usuario_id, nome, email, telefone]
       );
     }
-
-    await db.query(
-      `
-      UPDATE solicitantes
-      SET usuario_id = ?
-      WHERE empresa_id = ?
-        AND email = ?
-        AND usuario_id IS NULL
-      `,
-      [usuario_id, empresa_id, email]
-    );
 
     return NextResponse.json({
       id: result.insertId,

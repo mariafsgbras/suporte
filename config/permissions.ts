@@ -19,7 +19,7 @@ export const ROLE_PERMISSIONS = {
     usuarios: true,
     empresas: true,
     dashboard: true,
-    relatorios: false,
+    relatorios: true,
   },
   cliente: {
     chamados: true,
