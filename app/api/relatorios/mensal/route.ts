@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       SELECT u.nome AS responsavel, COUNT(*) AS quantidade
       FROM chamados c
       LEFT JOIN usuarios u ON u.id = c.responsavel_id
-      WHERE DATE_FORMAT(c.created_at, '%Y-%m') = ?
+      WHERE DATE_FORMAT(c.created_at, '%Y-%m') = ? and u.id <> 9
       GROUP BY u.nome
       ORDER BY quantidade DESC
       `,
