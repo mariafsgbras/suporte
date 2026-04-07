@@ -2,8 +2,6 @@
 
 import { Layout } from '@/components/Layout';
 import { useState } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { MdArrowBack } from 'react-icons/md';
 import{ useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
