@@ -164,9 +164,11 @@ export default function RelatorioTempoAtendimento() {
                   angle={-30}
                   textAnchor="end"
                   height={80}
+                />
+                <YAxis 
+                  allowDecimals={false} 
                   domain={[0, (dataMax: number) => dataMax * 1.2]}
                 />
-                <YAxis allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="quantidade" position="top" />
