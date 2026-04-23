@@ -142,7 +142,10 @@ export default function DashboardsPage() {
                   textAnchor="end"
                   height={75}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis
+                  allowDecimals={false}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
                 <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="total" position="top" />
@@ -172,7 +175,10 @@ export default function DashboardsPage() {
                   textAnchor="end"
                   height={80}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis
+                  allowDecimals={false}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
                 <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="total" position="top" />

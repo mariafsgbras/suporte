@@ -133,7 +133,10 @@ export default function RelatorioTempoAtendimento() {
                   textAnchor="end"
                   height={75}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
                 <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
                 <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="quantidade" position="top" />
@@ -161,6 +164,7 @@ export default function RelatorioTempoAtendimento() {
                   angle={-30}
                   textAnchor="end"
                   height={80}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
                 />
                 <YAxis allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
