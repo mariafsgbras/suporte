@@ -208,8 +208,9 @@ export default function DashboardsPage() {
               >
                 <XAxis type="number" />
                 <YAxis dataKey="empresa" type="category" width={150} />
-                 <Tooltip />
+                <Tooltip />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="total" position="right" />
                   {clientDashboard.map((_,index) => (
                     <Cell
                       key={`cell-${index}`}
@@ -237,14 +238,19 @@ export default function DashboardsPage() {
                   textAnchor='end'
                   height={60}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
                 <Tooltip />
                 <Line
                   type="monotone"
                   dataKey="total"
                   stroke="#2563eb"
                   strokeWidth={2}
-                />
+                >
+                <LabelList dataKey="total" position="top" />  
+                </Line>
               </LineChart>
             </ResponsiveContainer>
           </div>
