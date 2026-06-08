@@ -33,12 +33,12 @@ export async function POST(
   console.log('BODY:', body);
   console.log('TIPO:', tipoAtendimento);
 
-  /*if (!tipoAtendimento) {
+  if (!tipoAtendimento) {
     return NextResponse.json(
       { message: "Tipo de atendimento é obrigatório" },
       { status: 400 }
     );
-  }*/
+  }
 
   console.log({
     user: session.user.id,
@@ -46,7 +46,7 @@ export async function POST(
     chamadoId
   });
 
-  /*await db.query(
+  await db.query(
     `
     UPDATE chamados
     SET
@@ -57,7 +57,7 @@ export async function POST(
     WHERE id = ? AND status = 'open'
     `,
     [session.user.id, tipoAtendimento, chamadoId]
-  );*/
+  );
 
   await db.query(
     `

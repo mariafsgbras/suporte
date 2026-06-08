@@ -4,11 +4,11 @@ import { db } from '@/lib/db';
 export async function GET() {
   const [rows]: any = await db.query(`
     SELECT
-        e.nome AS empresa,
-        COUNT(*) AS total
+      e.nome AS empresa,
+      COUNT(*) AS total
     FROM chamados c 
     LEFT JOIN empresas e ON e.id = c.empresa_id
-    WHERE e.nome IS NOT NULL and e.nome <> ''
+    WHERE e.nome IS NOT NULL and e.nome <> '' and e.id <> 357
     GROUP BY c.empresa_id 
     ORDER BY total DESC
     LIMIT 10

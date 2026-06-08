@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { useParams, useSearchParams } from 'next/navigation';
 import{ useRouter } from 'next/navigation';
-import { MdArrowBack } from 'react-icons/md';
+import { MdArrowBack, MdContentCopy } from 'react-icons/md';
 import { useSession } from "next-auth/react";
 import { TicketActions } from '@/components/TicketActions';
 import { Toast } from '@/components/Toast';
@@ -70,6 +70,7 @@ export default function ChamadoPage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [editToast, setEditToast] = useState(false);
+  const [copyToast, setCopyToast] = useState(false);
   const [showTypeMessage, setShowTypeMessage] = useState(false);
 
   useEffect(() => {
@@ -104,13 +105,14 @@ export default function ChamadoPage() {
   }, [id]);
 
   useEffect(() => {
-    if (editing && ticket) {
-      setNovoResponsavel(
-        ticket.responsavel_id ? String(ticket.responsavel_id) : ''
-      );
-      setType(
-        ticket.classificacao_id ? String(ticket.classificacao_id) : ''
-      );
+    if (ticket) {
+      setType(ticket.classificacao_id ? String(ticket.classificacao_id) : '');
+    }
+  },[ticket]);
+
+  useEffect(() => {
+    if (ticket) {
+      setNovoResponsavel(ticket.responsavel_id ? String(ticket.responsavel_id) : '');
     }
   }, [editing, ticket]);
 
@@ -133,10 +135,10 @@ export default function ChamadoPage() {
   async function handleAssume(){
     if (!session || isCliente) return;
 
-    /*if(!type) {
+    if(!type) {
       setShowTypeMessage(true);
       return;
-    }*/
+    }
 
     try{
       setAssuming(true);
@@ -196,6 +198,11 @@ export default function ChamadoPage() {
       setShowCloseModal(false);
       return;
     }
+    if(!type) {
+      setShowCloseModal(false);
+      setShowTypeMessage(true);
+      return;
+    }
     try {
       setClosing(true);
 
@@ -219,7 +226,7 @@ export default function ChamadoPage() {
     }
   }
 
-  /*async function handleEdit() {
+  async function handleEdit() {
     if (!editing) {
       setEditing(true);
       setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
@@ -228,6 +235,7 @@ export default function ChamadoPage() {
     }
 
     try {
+      console.log('TYPE ANTES DO ENVIO:', type);
       const res = await fetch(`/api/chamados/${id}/editar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,29 +262,48 @@ export default function ChamadoPage() {
     setEditing(false);
     setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
     setType(String(ticket?.classificacao_id ?? ''));
-  }*/
+  }
+
+  async function handleCopyInfo() {
+    const text = `*Chamado:* ${ticket?.id}\n*Produto:* ${ticket?.product}\n*Solicitação:* ${ticket?.description}`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyToast(true);
+      setTimeout(() => setCopyToast(false), 2000);
+    } catch {
+      alert('Erro ao copiar informações');
+    }
+  }
 
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  if (from) {
-                    router.push(from);
-                  } else {
-                    router.push('/chamados');
-                  }
-                }}
-                className="flex items-center gap-1 text-gray-600 hover:bg-green-50 hover:text-green-700 transition-colors"
-              >
-                <MdArrowBack size={18} className="text-gray-600 hover:bg-[#3f7a49] hover:text-white rounded" />
-              </button>
-              <h1 className="text-xl font-semibold text-gray-400">
-                Chamado {ticket.id}
-              </h1>
-              <StatusBadge status={ticket.status} />
+            <button
+              onClick={() => {
+                if (from) {
+                  router.push(from);
+                } else {
+                  router.push('/chamados');
+                }
+              }}
+              className="flex items-center gap-1 text-gray-600 hover:bg-green-50 hover:text-green-700 transition-colors"
+            >
+              <MdArrowBack size={18} className="text-gray-600 hover:bg-[#3f7a49] hover:text-white rounded" />
+            </button>
+            <h1 className="text-xl font-semibold text-gray-400">
+              Chamado {ticket.id}
+            </h1>
+            <StatusBadge status={ticket.status} />
+            <button
+              onClick={handleCopyInfo}
+              className='p-1 rounded hover:bg-gray-200 transition text-gray-300'
+              title="Copiar informações"
+            >
+              <MdContentCopy size={18} />
+            </button>
           </div>
           {hasActions && (
             <TicketActions 
@@ -286,12 +313,11 @@ export default function ChamadoPage() {
               onAddComment={handleAddComment}
               assuming={assuming}
               closing={closing}
-              //onEdit={handleEdit}
+              onEdit={handleEdit}
               canEdit={!isCliente}
               editing={editing}
-              //onCancel={handleCancel}
-            />
-            
+              onCancel={handleCancel}
+            />  
           )}
         </div>
 
@@ -306,7 +332,7 @@ export default function ChamadoPage() {
           {!editing && (
             <Info label="Responsável" value={ticket.responsible ?? '-'} /> 
           )}
-          {/*{editing && (
+          {editing && (
             <div>  
               <h3 className="text-sm text-gray-500">Responsável</h3>
               <select
@@ -314,9 +340,7 @@ export default function ChamadoPage() {
                 onChange={(e) => setNovoResponsavel(e.target.value)}
                 className="border rounded p-2 text-gray-600 text-sm"
               >
-                <option value={ticket.responsavel_id}>
-                  Atual: {ticket.responsible}
-                </option>
+                <option value="">Selecione</option>
                 <option value="5">Arthur Santos</option>
                 <option value="6">João Pedro Alves</option>
                 <option value="3">João Pedro Morais</option>
@@ -325,7 +349,7 @@ export default function ChamadoPage() {
               </select>
 
             </div>  
-          )}*/}
+          )}
           <Info label="Telefone" value={ticket.requester_phone} />
         </div>
 
@@ -334,7 +358,7 @@ export default function ChamadoPage() {
           <p className="text-gray-700 text-sm pb-4">{ticket.product}</p>
           <h3 className="font-semibold mb-2 text-gray-700">Solicitação</h3>
           <p className="text-gray-700 text-sm pb-4">{ticket.description}</p>
-          {/*{hasActions && ticket.status === 'open' &&(
+          {hasActions && ticket.status === 'open' && (
             <div>  
               <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento
                 <span className='text-red-500'> *</span>
@@ -346,16 +370,18 @@ export default function ChamadoPage() {
               >
                 <option value="">Selecione</option>
                 <option value="1">Configuração</option>
-                <option value="2">Erro</option>
-                <option value="7">Dúvida</option>
                 <option value="3">Instalação</option>
-                <option value="6">Plataforma</option>
-                <option value="4">Script</option>
+                <option value="7">Dúvida</option>
                 <option value="5">Treinamento</option>
+                <option value="2">Erro Operacional</option>
+                <option value="8">Erro Hardware</option> 
+                <option value="4">Script - Desenvolvimento</option>
+                <option value="9">Script - Alteração</option>
+                <option value="10">Integração</option>
               </select>
             </div>  
-          )} */}
-          {/*{hasActions && ticket.status !== 'open' && !editing && (
+          )}
+          {hasActions && ticket.status !== 'open' && !editing && (
             <div>  
               <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento</h3> 
               <p className="text-gray-700 text-sm pb-1">{ticket.atendimento_tipo ?? '-'}</p>
@@ -369,19 +395,19 @@ export default function ChamadoPage() {
                 onChange={(e) => setType(e.target.value)}
                 className="border rounded p-2 text-gray-600 text-sm"
               >
-                <option value={ticket.classificacao_id}>
-                  Atual: {ticket.atendimento_tipo}
-                </option>
+                <option value="">Selecione</option>
                 <option value="1">Configuração</option>
-                <option value="2">Erro</option>
-                <option value="7">Dúvida</option>
                 <option value="3">Instalação</option>
-                <option value="6">Plataforma</option>
-                <option value="4">Script</option>
+                <option value="7">Dúvida</option>
                 <option value="5">Treinamento</option>
+                <option value="2">Erro Operacional</option>
+                <option value="8">Erro Hardware</option> 
+                <option value="4">Script - Desenvolvimento</option>
+                <option value="9">Script - Alteração</option>
+                <option value="10">Integração</option>
               </select>
             </div>  
-          )}*/}
+          )}
         </div>    
 
         {hasActions && (
@@ -475,18 +501,23 @@ export default function ChamadoPage() {
         onOk={() => setShowWarningModal(false)}
       />
 
-      {/*<Toast
+      <Toast
         show={editToast}
         message={`Alterações salvas com sucesso!`}
-      />*/}
+      />
 
-      {/*<WarningModal
+      <Toast
+        show={copyToast}
+        message={`Informações copiadas!`}
+      />
+
+      <WarningModal
         open={showTypeMessage}
         title="Aviso"
-        message={'Informe o tipo de atendimento para assumir o chamado.'}
+        message={'Informe o tipo de atendimento.'}
         okText='Ok'
         onOk={() => setShowTypeMessage(false)}
-      />*/}
+      />
     </Layout>
   );
 }

@@ -34,6 +34,18 @@ export async function GET(req: NextRequest) {
       [month]
     );
 
+    const [tipo]: any = await db.query(
+      `
+      SELECT t.tipo AS tipo, COUNT(*) AS quantidade
+      FROM chamados c
+      LEFT JOIN classificacao t ON t.id = c.classificacao_id
+      WHERE DATE_FORMAT(c.created_at, '%Y-%m') = ?
+      GROUP BY tipo
+      ORDER BY quantidade DESC
+      `,
+      [month]
+    );
+
     const [[tempos]]: any = await db.query(
       `
       SELECT 
@@ -82,6 +94,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       porResponsavel,
       porProduto,
+      tipo,
       tempos,
       qtde_abertos: qtde_abertos.qtde_abertos,
       qtde_fechados: qtde_fechados.qtde_fechados

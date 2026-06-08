@@ -35,6 +35,7 @@ export async function GET(
       s.nome AS requester,
       s.email AS requester_email,
       s.telefone AS requester_phone,
+      c.responsavel_id,
       r.nome AS responsible,
       p.nome AS product,
       c.descricao AS description,
@@ -42,6 +43,7 @@ export async function GET(
       c.created_at AS opened_at,
       c.updated_at,
       c.closed_at,
+      c.classificacao_id,
       t.tipo AS atendimento_tipo
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id

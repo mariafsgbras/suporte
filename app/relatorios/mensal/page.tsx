@@ -4,11 +4,8 @@ import { Layout } from '@/components/Layout';
 import { useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import{ useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
 import {
   LabelList,
-  LineChart,
-  Line,
   BarChart,
   Bar,
   XAxis,
@@ -30,6 +27,7 @@ export default function RelatorioTempoAtendimento() {
     tempos: {},
     qtde_abertos: 0,
     qtde_fechados: 0,
+    tipo: [],
   });
 
   const router = useRouter();
@@ -112,13 +110,83 @@ export default function RelatorioTempoAtendimento() {
         </div>
       </div>
 
-      <div className='flex w-full gap-6'>
-        <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>Quantidade total de chamados abertos no período</h1>
-        <StatCard label="Abertos" value={dados.qtde_abertos} color='text-green-600'/>
-        <StatCard label="Fechados" value={dados.qtde_fechados} color='text-red-600'/>
+      <div className='flex w-full gap-6 mb-4'>
+        <div className='flex flex-col w-full'>
+          <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>Quantidade total de chamados do período</h1>
+          <div className='h-80 w-full border rounded p-4 flex gap-3 items-center justify-center'>
+            <StatCard label="Abertos" value={dados.qtde_abertos} color='text-green-600'/>
+            <StatCard label="Fechados" value={dados.qtde_fechados} color='text-red-600'/>
+          </div>
+        </div>
+        
+        <div className='flex flex-col w-full'>
+          <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>
+            Quantidade Total de Chamados Por Produto
+          </h1>          
+          <div className='h-80 w-full border rounded p-4 text-gray-300 text-xs'>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dados.porProduto}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="produto"
+                  angle={-30}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
+                <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="quantidade" position="top" />
+                  {dados.porProduto.map((_: any,index: number) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
       
       <div className='flex w-full gap-6 mb-4'>
+        <div className='flex flex-col w-full'>
+          <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>
+            Quantidade Total de Chamados Por Tipo de Atendimento
+          </h1>
+          <div className='h-80 w-full border rounded p-4 text-gray-300 text-xs'>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dados.tipo}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="tipo"
+                  angle={-30}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
+                <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="quantidade" position="top" />
+                  {dados.tipo.map((_: any,index: number) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className='flex flex-col w-full'>
           <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>
             Quantidade Total de Chamados Por Atendente
@@ -150,43 +218,11 @@ export default function RelatorioTempoAtendimento() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>  
-        <div className='flex flex-col w-full'>
-          <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>
-            Quantidade Total de Chamados Por Produto
-          </h1>
-          <div className='h-80 w-full border rounded p-4 text-gray-300 text-xs'>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dados.porProduto}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="produto"
-                  angle={-30}
-                  textAnchor="end"
-                  height={80}
-                />
-                <YAxis 
-                  allowDecimals={false} 
-                  domain={[0, (dataMax: number) => dataMax * 1.2]}
-                />
-                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
-                <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="quantidade" position="top" />
-                  {dados.porProduto.map((_: any,index: number) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        </div>      
       </div>
 
       <div className='flex w-full gap-6'>
-        <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>Tempo Médio de Atendimento (em horas)</h1>
+        <h1 className='text-l font-semibold text-gray-600 mb-2 mt-6'>Tempo Médio de Atendimento</h1>
         <StatCard label="Início Atendimento" value={formatarTempo(dados.tempos.tempo_inicio_medio)} color='text-yellow-600'/>
         <StatCard label="Finalização do Atendimento" value={formatarTempo(dados.tempos.tempo_final_medio)} color='text-orange-600'/>
         <StatCard label="Total do Chamado" value={formatarTempo(dados.tempos.tempo_total_medio)} color='text-red-600'/>
@@ -205,7 +241,7 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <div className="border rounded px-4 py-3 min-w-[120px] h-24 w-full flex flex-col justify-center items-center text-gray-300">
+    <div className="border rounded px-4 py-3 min-w-[60px] h-24 w-full flex flex-col justify-center items-center text-gray-300">
       <div className={`text-2xl font-semibold ${color}`}>{value}</div>  
       <span className="text-sm text-gray-500">{label}</span>
     </div>
@@ -216,5 +252,5 @@ function formatarTempo(tempo: string) {
   if (!tempo) return '0h';
 
   const [h, m] = tempo.split(':');
-  return `${h}h${m}m`;
+  return `${h}h${m}min`;
 }

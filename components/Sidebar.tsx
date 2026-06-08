@@ -111,7 +111,7 @@ export function Sidebar() {
           {!collapsed && 'Sair'}
         </button>
         <p className='text-sm text-gray-300 mt-3'>
-          Versão 1.0.2
+          Versão 1.1.0
         </p>
       </div>
 

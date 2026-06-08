@@ -43,12 +43,19 @@ type MonthData = {
   total: number;
 }[];
 
+type TypeData = {
+  tipo: string;
+  total: number;
+}[];
+
 export default function DashboardsPage() {
   const [ticketDashboard, setTicketDashboard] = useState<TicketsData | null>(null);
   const [responsibleDashboard, setResponsibleDashboard] = useState<ResponsibleData>([]);
   const [productDashboard, setProductDashboard] = useState<ProductData>([]);
   const [clientDashboard, setClientDashboard] = useState<ClientData>([]);
   const [monthDashboard, setMonthDashboard] = useState<MonthData>([]);
+  const [typeDashboard, setTypeDashboard] = useState<TypeData>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,13 +77,14 @@ export default function DashboardsPage() {
 
   useEffect(() => {
     async function loadDashboard(){
-      try{
-        const [ticketRes, respRes, prodRes, cliRes, monRes] = await Promise.all([
+      try {
+        const [ticketRes, respRes, prodRes, cliRes, monRes, tipoRes] = await Promise.all([
           fetch(`/api/dashboards/chamados`),
           fetch(`/api/dashboards/atendentes`),
           fetch(`/api/dashboards/produtos`),
           fetch(`/api/dashboards/empresas`),
           fetch(`/api/dashboards/mes`),
+          fetch(`/api/dashboards/tipo`),
         ]);
 
         setTicketDashboard(await ticketRes.json());
@@ -84,9 +92,10 @@ export default function DashboardsPage() {
         setProductDashboard(await prodRes.json());
         setClientDashboard(await cliRes.json());
         setMonthDashboard(await monRes.json());
-      }catch{
+        setTypeDashboard(await tipoRes.json());
+      } catch {
         setError('Não foi possível carregar o dashboard');
-      }finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -130,39 +139,6 @@ export default function DashboardsPage() {
       <div className="flex w-full gap-6">
         <div className="flex flex-col w-full">
           <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
-            Quantidade Total de Chamados Por Atendente
-          </h1>
-          <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={responsibleDashboard}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="responsavel"
-                  angle={-30}
-                  textAnchor="end"
-                  height={75}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  domain={[0, (dataMax: number) => dataMax * 1.2]}
-                />
-                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
-                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="total" position="top" />
-                  {responsibleDashboard.map((_,index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="flex flex-col w-full">
-          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
             Quantidade Total de Chamados Por Produto
           </h1>
           <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
@@ -188,6 +164,106 @@ export default function DashboardsPage() {
                       fill={COLORS[index % COLORS.length]}
                     />
                   ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="flex flex-col w-full">
+          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
+            Quantidade de Chamados por Tipo de Atendimento
+          </h1>
+          <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={typeDashboard}>
+                <CartesianGrid strokeDasharray="5 5" />
+                <XAxis
+                  dataKey="tipo"
+                  angle={-30}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
+                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="total" position="top" />
+                  {typeDashboard.map((_,index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full gap-6">
+        <div className="flex flex-col w-full">
+          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
+            Quantidade de Chamados por Mês
+          </h1>
+          <div className="h-80 w-full border rounded p-2 text-xs">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthDashboard} margin={{ right: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="mes"
+                  interval={0}
+                  angle={-30}
+                  textAnchor='end'
+                  height={60}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                >
+                <LabelList dataKey="total" position="right" offset={10} />  
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="flex flex-col w-full">
+          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
+            Quantidade Total de Chamados Por Atendente
+          </h1>
+          <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={responsibleDashboard}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="responsavel"
+                  angle={-30}
+                  textAnchor="end"
+                  height={75}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip formatter={(value) => [`${value} chamados`, 'Quantidade']} />
+                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="total" position="top" />
+                  {responsibleDashboard.map((_,index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -219,39 +295,6 @@ export default function DashboardsPage() {
                   ))}
                 </Bar>
               </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="flex flex-col w-full">
-          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
-            Quantidade de Chamados por Mês
-          </h1>
-          <div className="h-80 w-full border rounded p-2 text-xs">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthDashboard}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="mes"
-                  interval={0}
-                  angle={-30}
-                  textAnchor='end'
-                  height={60}
-                />
-                <YAxis 
-                  allowDecimals={false} 
-                  domain={[0, (dataMax: number) => dataMax * 1.2]}
-                />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="total"
-                  stroke="#2563eb"
-                  strokeWidth={2}
-                >
-                <LabelList dataKey="total" position="top" />  
-                </Line>
-              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>

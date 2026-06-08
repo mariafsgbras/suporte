@@ -31,7 +31,10 @@ export async function POST(
     );
   }
 
-  if (!classificacao_id && !responsavel_id) {
+  if (
+    classificacao_id === undefined &&
+    responsavel_id === undefined
+  ) {
     return NextResponse.json(
       { message: "Nada para atualizar" },
       { status: 400 }
@@ -78,14 +81,20 @@ export async function POST(
   console.log('QUERY FINAL:', updates, values);
 
   console.log('BODY RAW:', body);
-  await db.query(
-    `
-    UPDATE chamados
-    SET ${updates.join(', ')}
-    WHERE id = ?
-    `,
-    values
-  );
+  try {
+    await db.query(
+      `
+      UPDATE chamados
+      SET ${updates.join(', ')}
+      WHERE id = ?
+      `,
+      values
+    );
+  } catch (err) {
+    console.log('ERRO NO UPDATE:', err);
+    return NextResponse.json({ error: 'Erro no banco' }, { status: 400 });
+  }
+  
 
   const [rows]: any = await db.query(
     `
