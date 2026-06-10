@@ -32,6 +32,11 @@ export default function WikiPage() {
             image="/products/rfid.png"
             href="https://wiki.sgbras.com/pt-br/produtos/RFID"
         />
+        {/*<ProductCard 
+            name="Sensor de Fadiga" 
+            image="/products/sensor_fadiga.png"
+            href="https://wiki.sgbras.com/pt-br/produtos/sensor-temperatura-sonda"
+        />*/}
         <ProductCard 
             name="Sensor de Temperatura por Sonda" 
             image="/products/sensor.png"

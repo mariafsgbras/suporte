@@ -370,14 +370,17 @@ export default function ChamadoPage() {
               >
                 <option value="">Selecione</option>
                 <option value="1">Configuração</option>
-                <option value="3">Instalação</option>
-                <option value="7">Dúvida</option>
-                <option value="5">Treinamento</option>
+                <option value="7">Dúvida</option> 
                 <option value="2">Erro Operacional</option>
                 <option value="8">Erro Hardware</option> 
+                <option value="10">Integração</option>
+                <option value="12">Rede CAN</option>
                 <option value="4">Script - Desenvolvimento</option>
                 <option value="9">Script - Alteração</option>
-                <option value="10">Integração</option>
+                <option value="3">Telemetria - Instalação</option>
+                <option value="11">Telemetria - Montagem</option>
+                <option value="5">Treinamento</option>
+                
               </select>
             </div>  
           )}
@@ -397,14 +400,16 @@ export default function ChamadoPage() {
               >
                 <option value="">Selecione</option>
                 <option value="1">Configuração</option>
-                <option value="3">Instalação</option>
-                <option value="7">Dúvida</option>
-                <option value="5">Treinamento</option>
+                <option value="7">Dúvida</option> 
                 <option value="2">Erro Operacional</option>
                 <option value="8">Erro Hardware</option> 
+                <option value="10">Integração</option>
+                <option value="12">Rede CAN</option>
                 <option value="4">Script - Desenvolvimento</option>
                 <option value="9">Script - Alteração</option>
-                <option value="10">Integração</option>
+                <option value="3">Telemetria - Instalação</option>
+                <option value="11">Telemetria - Montagem</option>
+                <option value="5">Treinamento</option>
               </select>
             </div>  
           )}

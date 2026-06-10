@@ -299,6 +299,7 @@ export default function NovoChamadoSemCadastroPage() {
                     <option value="5">Galileosky</option>
                     <option value="1">Leitor RFID</option>
                     <option value="4">Mão Amiga</option>
+                    <option value="12">NC-150</option>
                     <option value="6">Sensor de Fadiga - SF04A</option>
                     <option value="9">Sensor de Temperatura</option>
                     <option value="8">SW101</option>
@@ -382,6 +383,7 @@ export default function NovoChamadoSemCadastroPage() {
                     <option value="5">Galileosky</option>
                     <option value="1">Leitor RFID</option>
                     <option value="4">Mão Amiga</option>
+                    <option value="12">NC-150</option>
                     <option value="6">Sensor de Fadiga - SF04A</option>
                     <option value="9">Sensor de Temperatura</option>
                     <option value="8">SW101</option>
