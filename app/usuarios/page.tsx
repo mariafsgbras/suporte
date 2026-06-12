@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout } from "@/components/Layout";
+import { useSession } from "next-auth/react";
 
 export type UserActive = 1 | 0;
 
@@ -22,6 +23,7 @@ const statusMap: Record<
 };
 
 export default function UsersPage() {
+  const { data: session } = useSession();
   const router = useRouter();
 
   const [users, setUsers] = useState<User[]>([]);
@@ -54,6 +56,12 @@ export default function UsersPage() {
   useEffect(() => {
     setPage(1);
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (session && session.user.role === 'cliente') {
+        router.replace('/chamados');
+    }
+  }, [session]);
 
   return (
     <Layout>

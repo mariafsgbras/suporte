@@ -15,6 +15,8 @@ import {
   CartesianGrid,
   Cell,
 } from 'recharts';
+import { useSession } from "next-auth/react";
+import { useEffect } from 'react';
 
 export default function RelatorioTempoAtendimento() {
   const [month, setMonth] = useState('');
@@ -30,6 +32,7 @@ export default function RelatorioTempoAtendimento() {
     tipo: [],
   });
 
+  const { data: session } = useSession();
   const router = useRouter();
 
   const COLORS = [
@@ -59,6 +62,12 @@ export default function RelatorioTempoAtendimento() {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (session && session.user.role === 'cliente') {
+        router.replace('/chamados');
+    }
+  }, [session]);
   
   return (
     <Layout>

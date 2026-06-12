@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import { MdArrowBack } from 'react-icons/md';
 import{ useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
+import { useSession } from "next-auth/react";
 
 interface Chamado {
   id: number,
@@ -39,6 +39,7 @@ export default function RelatorioTempoAtendimento() {
   const [responsaveis, setResponsaveis] = useState<string[]>([]);
   const [status, setStatus] = useState('');
 
+  const { data: session } = useSession();
   const router = useRouter();
 
   async function gerarRelatorio() {
@@ -80,6 +81,12 @@ export default function RelatorioTempoAtendimento() {
 
     carregarFiltros();
   }, []);
+
+  useEffect(() => {
+    if (session && session.user.role === 'cliente') {
+        router.replace('/chamados');
+    }
+  }, [session]);
   
   return (
     <Layout>
