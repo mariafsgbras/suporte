@@ -207,7 +207,7 @@ export default function ChamadosPage() {
       </span>
 
       <button
-        disabled={page === totalPages}
+        disabled={page === totalPages || totalPages === 0}
         onClick={() => setPage(prev => prev + 1)}
         className="px-3 py-1 bg-[#3f7a49] rounded disabled:opacity-50"
       >
