@@ -40,7 +40,7 @@ function formatDateTime(dateString?: string | null) {
 export function TicketsTable({ tickets, onRowClick }: Props) {
   return (
     <div className="overflow-x-auto border rounded">
-      <table className="w-full border-separate min-w-[1400px]">
+      <table className="w-full min-w-[1400px]">
         <thead>
           <tr className="bg-gray-100 text-gray-600 text-left h-12">
             <th className="px-4">Nº</th>
