@@ -25,6 +25,11 @@ export default function FormsPage() {
       descricao: 'Relatório de análise de tempo de atendimento',
       rota: '/relatorios/tempo'
     },
+    {
+      titulo: 'Relatório de Chamados Hot-line',
+      descricao: 'Lista de atendimentos Hot-line',
+      rota: '/relatorios/hot-line'
+    },
   ]
 
   const [loading, setLoading] = useState(false);

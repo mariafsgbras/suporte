@@ -27,7 +27,8 @@ export async function GET(
       u.role AS role,
       u.created_at AS created_at,
       u.updated_at AS updated_at,
-      e.nome AS company
+      e.nome AS company,
+      e.prioridade AS priority
     FROM usuarios u
     JOIN empresas e ON e.id = u.empresa_id
     WHERE u.id = ?

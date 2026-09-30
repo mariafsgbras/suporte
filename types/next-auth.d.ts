@@ -10,12 +10,14 @@ declare module "next-auth" {
       role: "admin" | "atendente" | "cliente";
       empresa_id: number;
       empresa_nome?: string;
+      empresa_prioridade: string;
     };
   }
 
   interface User {
     phone?: string | null;
     empresa_nome?: string;
+    empresa_prioridade: string;
     role: "admin" | "atendente" | "cliente";
     empresa_id: number;
   }

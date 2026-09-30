@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get('status');
   const search = searchParams.get('search');
   const onlyMine = searchParams.get('onlyMine');
+  const hotLine = searchParams.get('hotLine');
+  
   const offset = (page - 1) * limit;
 
   let baseQuery = `
@@ -41,6 +43,11 @@ export async function GET(req: NextRequest) {
   if (onlyMine === "true") {
     whereClauses.push('c.responsavel_id = ?');
     params.push(Number(session.user.id));
+  }
+
+  if (hotLine === "true") {
+    whereClauses.push('c.prioridade = 1');
+    //params.push(Number(session.user.empresa_prioridade));
   }
 
   if (status && status !== 'all') {
@@ -87,7 +94,8 @@ export async function GET(req: NextRequest) {
       p.nome AS produto,
       e.nome AS empresa,
       e.cnpj AS cnpj,
-      r.nome AS responsavel
+      r.nome AS responsavel,
+      c.prioridade AS prioridade
     ${baseQuery}
     ${whereSQL}
     ORDER BY c.created_at DESC

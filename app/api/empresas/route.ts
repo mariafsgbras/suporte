@@ -22,8 +22,7 @@ export async function GET(req: NextRequest) {
   const offset = (page - 1) * limit;
 
   let baseQuery = `
-    FROM usuarios u
-    JOIN empresas e ON e.id = u.empresa_id`;
+    FROM empresas e`;
 
   const whereClauses: string[] = [];
   const params: any[] = [];
@@ -31,15 +30,14 @@ export async function GET(req: NextRequest) {
   if (search && search.trim() !=='') {
     whereClauses.push(`
       (
-        u.id LIKE ? OR
-        u.nome LIKE ? OR
-        u.ativo LIKE ? OR
-        e.nome LIKE ?
+        e.id LIKE ? OR
+        e.nome LIKE ? OR
+        e.cnpj LIKE ?
       )
     `);
 
     const searchTerm = `%${search}%`;
-    params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    params.push(searchTerm, searchTerm, searchTerm);
   }
 
   const whereSQL = whereClauses.length
@@ -55,13 +53,16 @@ export async function GET(req: NextRequest) {
 
   const [rows] = await db.query(`
     SELECT 
-      u.id,
-      u.nome,
-      u.ativo,
-      e.nome AS empresa
+      e.id,
+      e.nome,
+      (
+        e.prioridade = '1'
+        AND (e.data_inicio_prioridade IS NULL OR e.data_inicio_prioridade <= CURDATE())
+        AND (e.data_fim_prioridade IS NULL OR e.data_fim_prioridade >= CURDATE())
+      ) AS prioridade_ativa
     ${baseQuery}
     ${whereSQL}
-    ORDER BY u.id ASC
+    ORDER BY e.id ASC
     LIMIT ? OFFSET ?
     `,
     [...params, limit, offset]

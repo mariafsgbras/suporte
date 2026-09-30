@@ -8,19 +8,21 @@ import { MdArrowBack } from 'react-icons/md';
 import { useSession } from "next-auth/react";
 import { ResetPasswordModal } from '@/components/ResetPasswordModel';
 import toast from 'react-hot-toast';
+import { MdWarningAmber } from 'react-icons/md';
 
 type UserActive = 1 | 0;
 
 type User = {
-    id: number;
-    name: string;
-    company: string;
-    email: string;
-    phone: string;
-    role: string;
-    active: UserActive;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  role: string;
+  active: UserActive;
+  created_at: string;
+  updated_at: string;
+  priority: string;
 };
 
 export default function UserPage() {
@@ -41,6 +43,8 @@ export default function UserPage() {
   const [active, setActive] = useState<UserActive>(0);
   const [saving, setSaving] = useState(false);
 
+  const temPrioridade = user?.priority === '1';
+
   useEffect(() => {
     if (!id) return;
 
@@ -51,7 +55,7 @@ export default function UserPage() {
         
 
         if (!res.ok) {
-          throw new Error('Erro ao buscar chamado');
+          throw new Error('Erro ao buscar usuário');
         }
 
         const data = await res.json();
@@ -142,6 +146,15 @@ export default function UserPage() {
           </h1>
 
           <StatusBadge status={user.active} />
+          {temPrioridade && (
+            <div 
+              className="ml-2 flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-white font-semibold text-sm"
+              title="Chamado prioritário" 
+            >
+              <MdWarningAmber className="text-lg flex-shrink-0" />
+              <span>Hot-line</span>
+            </div>
+          )}
         </div>
 
         {!editing ? (

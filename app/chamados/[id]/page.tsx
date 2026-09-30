@@ -10,6 +10,8 @@ import { TicketActions } from '@/components/TicketActions';
 import { Toast } from '@/components/Toast';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { WarningModal } from '@/components/WarningModal';
+import { MdPriorityHigh } from 'react-icons/md';
+import { MdWarningAmber } from "react-icons/md";
 
 type TicketStatus = 'open' | 'in_progress' | 'closed';
 
@@ -22,6 +24,7 @@ type Ticket = {
   requester_phone: string;
   responsible?: string | null;
   product: string;
+  produto_id?: number;
   description: string;
   opened_at: string;
   closed_at?: string | null;
@@ -30,6 +33,7 @@ type Ticket = {
   atendimento_tipo: string | null;
   responsavel_id: number;
   classificacao_id: number;
+  prioridade: string;
 };
 
 type Comment = {
@@ -54,6 +58,7 @@ export default function ChamadoPage() {
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [type, setType] = useState<string>('');
   const [novoResponsavel, setNovoResponsavel] = useState<string>('');
+  const [novoProduto, setNovoProduto] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +78,8 @@ export default function ChamadoPage() {
   const [copyToast, setCopyToast] = useState(false);
   const [showTypeMessage, setShowTypeMessage] = useState(false);
 
+  const temPrioridade = ticket?.prioridade === '1';
+
   useEffect(() => {
     if (!id) return;
 
@@ -86,6 +93,7 @@ export default function ChamadoPage() {
 
         const data = await res.json();
         setTicket(data);
+
       } catch (err) {
         setError('Não foi possível carregar o chamado');
       } finally {
@@ -113,6 +121,12 @@ export default function ChamadoPage() {
   useEffect(() => {
     if (ticket) {
       setNovoResponsavel(ticket.responsavel_id ? String(ticket.responsavel_id) : '');
+    }
+  }, [editing, ticket]);
+
+  useEffect(() => {
+    if (ticket) {
+      setNovoProduto(ticket.produto_id ? String(ticket.produto_id) : '');
     }
   }, [editing, ticket]);
 
@@ -158,6 +172,7 @@ export default function ChamadoPage() {
 
       const updated = await res.json();
       setTicket(updated);
+      setType(String(updated.classificacao_id ?? type));
     }catch {
       alert('Erro ao assumir o chamado')
     }finally {
@@ -198,7 +213,7 @@ export default function ChamadoPage() {
       setShowCloseModal(false);
       return;
     }
-    if(!type) {
+    if(!ticket?.atendimento_tipo) {
       setShowCloseModal(false);
       setShowTypeMessage(true);
       return;
@@ -231,6 +246,7 @@ export default function ChamadoPage() {
       setEditing(true);
       setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
       setType(String(ticket?.classificacao_id ?? ''));
+      setNovoProduto(ticket?.product ? String(ticket.product) : '');
       return;
     }
 
@@ -241,14 +257,18 @@ export default function ChamadoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...(novoResponsavel && { responsavel_id: Number(novoResponsavel) }),
-          ...(type && { classificacao_id: Number(type) })
+          ...(type && { classificacao_id: Number(type) }),
+          ...(novoProduto && { produto_id: Number(novoProduto) })
         }),
       });
 
       if (!res.ok) throw new Error();
 
       const updated = await res.json();
-
+      console.log("TYPE:", type);
+      console.log("CLASSIFICACAO:", updated.classificacao_id);
+      console.log(updated.classificacao_id);
+      console.log("PRODUTO:", updated.produto_id);
       setTicket(updated);
       setEditing(false);
       setEditToast(true);
@@ -262,6 +282,7 @@ export default function ChamadoPage() {
     setEditing(false);
     setNovoResponsavel(ticket?.responsavel_id ? String(ticket.responsavel_id) : '');
     setType(String(ticket?.classificacao_id ?? ''));
+    setNovoProduto(ticket?.produto_id ? String(ticket.produto_id) : '');
   }
 
   async function handleCopyInfo() {
@@ -304,7 +325,17 @@ export default function ChamadoPage() {
             >
               <MdContentCopy size={18} />
             </button>
+            {temPrioridade && (
+              <div 
+                className="ml-2 flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-white font-semibold text-sm"
+                title="Chamado prioritário" 
+              >
+                <MdWarningAmber className="text-lg flex-shrink-0" />
+                <span>Hot-line</span>
+              </div>
+            )}
           </div>
+          
           {hasActions && (
             <TicketActions 
               status={ticket.status}
@@ -354,10 +385,43 @@ export default function ChamadoPage() {
         </div>
 
         <div className="bg-white p-4 rounded border">
-          <h3 className="font-semibold mb-2 text-gray-700">Produto</h3>
-          <p className="text-gray-700 text-sm pb-4">{ticket.product}</p>
+          {!editing && (
+            <div>
+              <h3 className="font-semibold mb-2 text-gray-700">Produto</h3>
+              <p className="text-gray-700 text-sm pb-4">{ticket.product}</p>
+            </div>
+          )}
+          {editing && (
+            <div>
+              <h3 className="font-semibold mb-2 text-gray-700">Produto</h3>
+              <select
+                value={novoProduto}
+                onChange={(e) => setNovoProduto(e.target.value)}
+                className="w-full border rounded p-2 text-gray-600"
+              >
+                <option value="">Selecione o produto</option>
+                <option value="3">Auxiliar de Bordo</option>
+                <option value="7">Bloqueador - SW403</option>
+                <option value="5">Galileosky</option>
+                <option value="1">Leitor RFID</option>
+                <option value="4">Mão Amiga</option>
+                <option value="12">NC-150</option>
+                <option value="6">Sensor de Fadiga - SF04A</option>
+                <option value="9">Sensor de Temperatura</option>
+                <option value="8">SW101</option>
+                <option value="2">Teclado</option>
+                <option value="10">Telemetria</option>
+                <option value="11">Outro</option>
+              </select>
+            </div>
+          )}
           <h3 className="font-semibold mb-2 text-gray-700">Solicitação</h3>
-          <p className="text-gray-700 text-sm pb-4">{ticket.description}</p>
+          <p
+            className="text-gray-700 text-sm pb-4 whitespace-pre-wrap"
+            style={{ overflowWrap: "anywhere" }}
+          >
+            {ticket.description}
+          </p>
           {hasActions && ticket.status === 'open' && (
             <div>  
               <h3 className="font-semibold mb-2 text-gray-700">Tipo de Atendimento

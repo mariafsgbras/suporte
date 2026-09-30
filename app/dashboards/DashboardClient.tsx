@@ -48,6 +48,11 @@ type TypeData = {
   total: number;
 }[];
 
+type HotlineData = {
+  mes: string;
+  total: number;
+}[];
+
 export default function DashboardsPage() {
   const [ticketDashboard, setTicketDashboard] = useState<TicketsData | null>(null);
   const [responsibleDashboard, setResponsibleDashboard] = useState<ResponsibleData>([]);
@@ -55,6 +60,7 @@ export default function DashboardsPage() {
   const [clientDashboard, setClientDashboard] = useState<ClientData>([]);
   const [monthDashboard, setMonthDashboard] = useState<MonthData>([]);
   const [typeDashboard, setTypeDashboard] = useState<TypeData>([]);
+  const [hotlineDashboard, setHotlineDashboard] = useState<TypeData>([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,13 +84,14 @@ export default function DashboardsPage() {
   useEffect(() => {
     async function loadDashboard(){
       try {
-        const [ticketRes, respRes, prodRes, cliRes, monRes, tipoRes] = await Promise.all([
+        const [ticketRes, respRes, prodRes, cliRes, monRes, tipoRes, hotlineRes] = await Promise.all([
           fetch(`/api/dashboards/chamados`),
           fetch(`/api/dashboards/atendentes`),
           fetch(`/api/dashboards/produtos`),
           fetch(`/api/dashboards/empresas`),
           fetch(`/api/dashboards/mes`),
           fetch(`/api/dashboards/tipo`),
+          fetch(`/api/dashboards/hotline`),
         ]);
 
         setTicketDashboard(await ticketRes.json());
@@ -93,6 +100,7 @@ export default function DashboardsPage() {
         setClientDashboard(await cliRes.json());
         setMonthDashboard(await monRes.json());
         setTypeDashboard(await tipoRes.json());
+        setHotlineDashboard(await hotlineRes.json());
       } catch {
         setError('Não foi possível carregar o dashboard');
       } finally {
@@ -239,6 +247,42 @@ export default function DashboardsPage() {
         </div>
         <div className="flex flex-col w-full">
           <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
+            Quantidade de Chamados Hot-line por Mês
+          </h1>
+          <div className="h-80 w-full border rounded p-2 text-xs">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={hotlineDashboard} margin={{ right: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="mes"
+                  interval={0}
+                  angle={-30}
+                  textAnchor='end'
+                  height={60}
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <YAxis 
+                  allowDecimals={false} 
+                  domain={[0, (dataMax: number) => dataMax * 1.2]}
+                />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                >
+                <LabelList dataKey="total" position="right" offset={10} />  
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full gap-6">
+        <div className="flex flex-col w-full">
+          <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
             Quantidade Total de Chamados Por Atendente
           </h1>
           <div className="h-80 w-full border rounded p-4 text-gray-300 text-xs">
@@ -269,9 +313,6 @@ export default function DashboardsPage() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-
-      <div className="flex w-full gap-6">
         <div className="flex flex-col w-full">
           <h1 className="text-xl font-semibold text-gray-600 mb-2 mt-6">
             Quantidade Total de Chamados Por Clientes (Top 10)

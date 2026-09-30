@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 export async function POST(
@@ -10,7 +10,7 @@ export async function POST(
   const { id } = await context.params;
   const body = await req.json();
 
-  const { classificacao_id, responsavel_id } = body;
+  const { classificacao_id, responsavel_id, produto_id } = body;
   
   const session = await getServerSession(authOptions);
 
@@ -33,7 +33,8 @@ export async function POST(
 
   if (
     classificacao_id === undefined &&
-    responsavel_id === undefined
+    responsavel_id === undefined &&
+    produto_id === undefined
   ) {
     return NextResponse.json(
       { message: "Nada para atualizar" },
@@ -41,14 +42,15 @@ export async function POST(
     );
   }
 
-  console.log(classificacao_id, responsavel_id);
+  console.log(classificacao_id, responsavel_id, produto_id);
 
   const updates: string[] = [];
   const values: any[] = [];
 
   console.log('VALORES RECEBIDOS:', {
     classificacao_id,
-    responsavel_id
+    responsavel_id,
+    produto_id
   });
 
   if (
@@ -67,6 +69,15 @@ export async function POST(
   ) {
     updates.push('classificacao_id = ?');
     values.push(Number(classificacao_id));
+  }
+
+  if (
+    produto_id !== undefined &&
+    produto_id !== null &&
+    produto_id !== ''
+  ) {
+    updates.push('produto_id = ?');
+    values.push(Number(produto_id));
   }
 
   if (updates.length === 0) {
@@ -94,7 +105,6 @@ export async function POST(
     console.log('ERRO NO UPDATE:', err);
     return NextResponse.json({ error: 'Erro no banco' }, { status: 400 });
   }
-  
 
   const [rows]: any = await db.query(
     `
@@ -108,13 +118,15 @@ export async function POST(
       r.nome AS responsible,
       c.responsavel_id,
       p.nome AS product,
+      c.produto_id,
       c.descricao AS description,
       c.status,
       c.created_at AS opened_at,
       c.updated_at,
       c.closed_at,
       t.tipo AS atendimento_tipo,
-      c.classificacao_id
+      c.classificacao_id,
+      c.prioridade AS prioridade
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id
     JOIN solicitantes s ON s.id = c.solicitante_id

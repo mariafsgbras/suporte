@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(
   req: Request,
@@ -44,7 +44,8 @@ export async function GET(
       c.updated_at,
       c.closed_at,
       c.classificacao_id,
-      t.tipo AS atendimento_tipo
+      t.tipo AS atendimento_tipo,
+      c.prioridade AS prioridade
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id
     JOIN solicitantes s ON s.id = c.solicitante_id

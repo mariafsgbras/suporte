@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from '@/lib/auth';
 import { redirect } from "next/navigation";
 import { hasPermission } from "@/config/permissions";
-import UsuariosClient from "./UsuariosClient";
+import EmpresasClient from "./EmpresasClient";
 
 export default async function UsersPage() {
   const session = await getServerSession(authOptions);
@@ -11,9 +11,9 @@ export default async function UsersPage() {
     redirect("/login");
   }
 
-  if(!hasPermission(session.user.role, "usuarios")){
+  if(!hasPermission(session.user.role, "empresas")){
     redirect("/acesso-negado");
   }
 
-  return <UsuariosClient />;
+  return <EmpresasClient />;
 }

@@ -21,6 +21,7 @@ export type Ticket = {
   open_date: string;
   closed_date?: string;
   updated_at?: string;
+  priority: string;
 };
 
 export default function ChamadosPage() {
@@ -42,7 +43,10 @@ export default function ChamadosPage() {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') ?? '');
   const onlyMineParam = searchParams.get("onlyMine") ?? searchParams.get("onlymine");
   const [onlyMine, setOnlyMine] = useState(onlyMineParam === "true");
-
+  const hotLineParam = searchParams.get("hotLine") ?? searchParams.get("hotLine");
+  const [hotLine, setHotLine] = useState(hotLineParam === "true");
+  const effectiveOnlyMine = statusFilter === "open" ? false : onlyMine;
+  
   const [limit] = useState(20);
   const [total, setTotal] = useState(0);
   
@@ -53,7 +57,8 @@ export default function ChamadosPage() {
       limit: limit.toString(),
       status: statusFilter,
       search: searchTerm,
-      onlyMine: onlyMine.toString(),
+      onlyMine: effectiveOnlyMine.toString(),
+      hotLine: hotLine.toString(),
     });
 
     const res = await fetch(`/api/chamados?${params}`);
@@ -71,6 +76,7 @@ export default function ChamadosPage() {
       open_date: item.created_at,
       closed_date: item.closed_at ?? null,
       updated_at: item.updated_at ?? null,
+      priority: item.prioridade,
     }));
 
     setTickets(mappedTickets);
@@ -85,11 +91,11 @@ export default function ChamadosPage() {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [page, statusFilter, onlyMine, searchTerm]);
+  }, [page, statusFilter, onlyMine, searchTerm, hotLine]);
 
   useEffect(() => {
     setPage(1);
-  }, [statusFilter, searchTerm, onlyMine]);
+  }, [statusFilter, searchTerm, onlyMine, hotLine]);
 
   const totalPages = Math.ceil(total / limit);
 
@@ -157,21 +163,34 @@ export default function ChamadosPage() {
           onStatusChange={setStatusFilter}
         />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <p className="text-sm text-gray-600">
             {ticketsCount} {countLabel()}
           </p>
 
           {hasActions && (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={onlyMine}
-                disabled={statusFilter === 'open'}
-                onChange={(e) => setOnlyMine(e.target.checked)}
-              />
-              <label className="text-sm text-gray-700">
-                Mostrar apenas meus chamados
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={onlyMine}
+                  disabled={statusFilter === 'open'}
+                  onChange={(e) => setOnlyMine(e.target.checked)}
+                />
+                <span className={`text-sm ${statusFilter === 'open' ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700'}`}>
+                  Mostrar apenas meus chamados
+                </span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hotLine}
+                  onChange={(e) => setHotLine(e.target.checked)}
+                />
+                <span className="text-sm text-gray-700">
+                  Mostrar apenas chamados Hot-line
+                </span>
               </label>
             </div>
           )}

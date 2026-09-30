@@ -1,32 +1,35 @@
-'use client'
+'use client';
 
 import { Layout } from '@/components/Layout';
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { MdArrowBack } from 'react-icons/md';
-import{ useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
 
 interface Chamado {
-  id: number,
-  empresa: string,
-  solicitante: string,
-  produto: string,
-  responsavel: string,
-  status: string,
-  created_at: string,
-  closed_at: string | null,
-  tempo_minutos: number,
+  id: number;
+  empresa: string;
+  solicitante: string;
+  produto: string;
+  responsavel: string;
+  status: string;
+  created_at: string;
+  updated_at: string | null;
+  closed_at: string | null;
+  tempo_inicio_minutos: number;
+  tempo_finalizacao_minutos: number;
+  tempo_total_minutos: number;
 }
 
-export default function RelatorioChamados() {
+export default function RelatorioChamadosHotline() {
   const [inicio, setInicio] = useState('');
   const [fim, setFim] = useState('');
   const [empresa, setEmpresa] = useState('');
   const [produto, setProduto] = useState('');
   const [responsavel, setResponsavel] = useState('');
-  
+
   const [exportForm, setExportForm] = useState(false);
 
   const [dados, setDados] = useState<Chamado[]>([]);
@@ -39,6 +42,19 @@ export default function RelatorioChamados() {
   const { data: session } = useSession();
   const router = useRouter();
 
+  function formatarTempo(minutos: number | null | undefined) {
+    if (minutos == null) return '-';
+
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+
+    if (horas === 0) {
+      return `${minutosRestantes} min`;
+    }
+
+    return `${horas}h ${minutosRestantes}min`;
+  }
+
   async function gerarRelatorio() {
     setExportForm(true);
     if (!inicio || !fim) {
@@ -49,14 +65,14 @@ export default function RelatorioChamados() {
     setLoading(true);
 
     const res = await fetch(
-      `/api/relatorios/chamados?inicio=${inicio}&fim=${fim}&empresa=${empresa}&responsavel=${responsavel}&produto=${produto}&status=${status}`
+      `/api/relatorios/hot-line?inicio=${inicio}&fim=${fim}&empresa=${empresa}&responsavel=${responsavel}&produto=${produto}&status=${status}`,
     );
 
     const json = await res.json();
     setDados(json);
 
     setLoading(false);
-  };
+  }
 
   function exportarExcel() {
     const worksheet = XLSX.utils.json_to_sheet(dados);
@@ -65,10 +81,10 @@ export default function RelatorioChamados() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatorio');
 
     XLSX.writeFile(workbook, 'relatorio_chamados.xlsx');
-  };
+  }
 
   useEffect(() => {
-    async function  carregarFiltros() {
+    async function carregarFiltros() {
       const res = await fetch('/api/filtros/chamados');
       const json = await res.json();
 
@@ -78,28 +94,31 @@ export default function RelatorioChamados() {
 
     carregarFiltros();
   }, []);
-  
+
   useEffect(() => {
     if (session && session.user.role === 'cliente') {
-        router.replace('/chamados');
+      router.replace('/chamados');
     }
   }, [session]);
 
   return (
     <Layout>
-      <div className='flex items-center gap-3 justify-between mb-4'>
+      <div className="flex items-center gap-3 justify-between mb-4">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/relatorios')}
             className="flex items-center gap-1 text-gray-600 hover:bg-green-50 hover:text-green-700 transition-colors"
           >
-            <MdArrowBack size={18} className="text-gray-600 hover:bg-[#3f7a49] hover:text-white rounded" />
+            <MdArrowBack
+              size={18}
+              className="text-gray-600 hover:bg-[#3f7a49] hover:text-white rounded"
+            />
           </button>
           <h1 className="text-xl font-semibold text-gray-800 mb-2">
-            Relatório de Chamados
+            Relatório de Chamados Hot-line
           </h1>
         </div>
-        <div className='flex items-center gap-3'>
+        <div className="flex items-center gap-3">
           <button
             onClick={gerarRelatorio}
             style={{
@@ -109,13 +128,13 @@ export default function RelatorioChamados() {
               padding: '6px 15px',
               border: 'none',
               borderRadius: 4,
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             {loading ? 'Gerando...' : 'Gerar Relatório'}
           </button>
           <button
-            className='px-3 py-2 rounded text-sm border bg-gray text-gray-600 hover:bg-gray-100'
+            className="px-3 py-2 rounded text-sm border bg-gray text-gray-600 hover:bg-gray-100"
             onClick={exportarExcel}
             disabled={!exportForm}
           >
@@ -123,8 +142,8 @@ export default function RelatorioChamados() {
           </button>
         </div>
       </div>
-      
-      <div className='p-4 grid grid-cols-2 gap-4 text-gray-600 mb-4 bg-white rounded border'>
+
+      <div className="p-4 grid grid-cols-2 gap-4 text-gray-600 mb-4 bg-white rounded border">
         <div>
           <label>Data Início: </label>
           <input
@@ -161,7 +180,9 @@ export default function RelatorioChamados() {
           >
             <option value="">Todos</option>
             {produtos.map((p) => (
-              <option key={p} value={p}>{p}</option>
+              <option key={p} value={p}>
+                {p}
+              </option>
             ))}
           </select>
         </div>
@@ -174,7 +195,9 @@ export default function RelatorioChamados() {
           >
             <option value="">Todos</option>
             {responsaveis.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>
+                {r}
+              </option>
             ))}
           </select>
         </div>
@@ -183,7 +206,7 @@ export default function RelatorioChamados() {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className='w-full rounded border focus:outline px-2 py-1'
+            className="w-full rounded border focus:outline px-2 py-1"
           >
             <option value="">Todos</option>
             <option value="open">Abertos</option>
@@ -192,50 +215,65 @@ export default function RelatorioChamados() {
           </select>
         </div>
       </div>
-      
-      <div className='overflow-x-auto border rounded'>
-        <p className="p-2 text-gray-600">
-          Total de chamados filtrados: {dados.length}
-        </p>
-        <table className='w-full border-collapse min-w-[1200px] text-gray-400'>
+
+      <div className="overflow-x-auto border rounded">
+        <p className="p-2 text-gray-600">Total de chamados filtrados: {dados.length}</p>
+        <table className="w-full border-collapse min-w-[1800px] text-gray-400">
           <thead>
-            <tr className='bg-gray-100 text-gray-600'>
-              <th className='border border-gray-300 px-4 py-2'>Nº</th>
-              <th className='border border-gray-300 px-4 py-2'>ID</th>
-              <th className='border border-gray-300 px-4 py-2'>Empresa</th>
-              <th className='border border-gray-300 px-4 py-2'>Solicitante</th>
-              <th className='border border-gray-300 px-4 py-2'>Produto</th>
-              <th className='border border-gray-300 px-4 py-2'>Responsável</th>
-              <th className='border border-gray-300 px-4 py-2'>Status</th>
-              <th className='border border-gray-300 px-4 py-2'>Abertura</th>
-              <th className='border border-gray-300 px-4 py-2'>Fechamento</th>
+            <tr className="bg-gray-100 text-gray-600">
+              <th className="border border-gray-300 px-4 py-2">Nº</th>
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2">Empresa</th>
+              <th className="border border-gray-300 px-4 py-2">Solicitante</th>
+              <th className="border border-gray-300 px-4 py-2">Produto</th>
+              <th className="border border-gray-300 px-4 py-2">Responsável</th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Abertura</th>
+              <th className="border border-gray-300 px-4 py-2">Início atendimento</th>
+              <th className="border border-gray-300 px-4 py-2">Fechamento</th>
+              <th className="border border-gray-300 px-4 py-2">Tempo p/ início</th>
+              <th className="border border-gray-300 px-4 py-2">Tempo p/ finalização</th>
+              <th className="border border-gray-300 px-4 py-2">Tempo total</th>
             </tr>
           </thead>
 
           <tbody>
             {dados.map((item, index) => (
-              <tr 
-                key={item.id}
-                className='h-12 cursor-pointer text-gray-400 bg-gray-50'
-              >
-                <td className='px-4 whitespace-nowrap border border-gray-300'>{index + 1}</td>
-                <td className='px-4 whitespace-nowrap border border-gray-300'>{item.id}</td>
-                <td className='border border-gray-300 px-4 py-2'>{item.empresa}</td>
-                <td className='border border-gray-300 px-4 py-2'>{item.solicitante}</td>
-                <td className='border border-gray-300 px-4 py-2'>{item.produto}</td>
-                <td className='border border-gray-300 px-4 py-2'>{item.responsavel ?? 'Sem responsável'}</td>
-                <td className='border border-gray-300 px-4 py-2'>
+              <tr key={item.id} className="h-12 cursor-pointer text-gray-400 bg-gray-50">
+                <td className="px-4 whitespace-nowrap border border-gray-300">{index + 1}</td>
+                <td className="px-4 whitespace-nowrap border border-gray-300">{item.id}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.empresa}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.solicitante}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.produto}</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {item.responsavel ?? 'Sem responsável'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
                   {item.status === 'in_progress'
                     ? 'Em andamento'
-                      : item.status === 'open'
-                        ? 'Aberto'
-                        : 'Fechado'}
+                    : item.status === 'open'
+                      ? 'Aberto'
+                      : 'Fechado'}
                 </td>
-                <td className='border border-gray-300 px-4 py-2'>{new Date(item.created_at).toLocaleString()}</td>
-                <td className='border border-gray-300 px-4 py-2'>
-                  {item.closed_at
-                    ? new Date(item.closed_at).toLocaleString()
-                    : 'Em andamento'}
+                <td className="border border-gray-300 px-4 py-2">
+                  {new Date(item.created_at).toLocaleString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {item.updated_at ? new Date(item.updated_at).toLocaleString() : '-'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {item.closed_at ? new Date(item.closed_at).toLocaleString() : 'Em andamento'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                  {formatarTempo(item.tempo_inicio_minutos)}
+                </td>
+
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                  {formatarTempo(item.tempo_finalizacao_minutos)}
+                </td>
+
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                  {formatarTempo(item.tempo_total_minutos)}
                 </td>
               </tr>
             ))}
@@ -243,6 +281,5 @@ export default function RelatorioChamados() {
         </table>
       </div>
     </Layout>
-  )
-};
-
+  );
+}

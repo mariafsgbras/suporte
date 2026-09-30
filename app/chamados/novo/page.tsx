@@ -9,10 +9,15 @@ export default function NovoChamadoPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  const temPrioridade = session?.user.empresa_prioridade === '1';
+  //const suporte = session?.user.role === 'admin' || session?.user.role === 'atendente';
+
   const [product, setProduct] = useState<string>('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [successId, setSuccesId] = useState<number | null>(null);
+
+  const [priority, setPriority] = useState(false);
 
   if (status === 'loading') {
     return (
@@ -39,6 +44,7 @@ export default function NovoChamadoPage() {
         body: JSON.stringify({
           product,
           description,
+          priority
         }),
       });
 
@@ -131,6 +137,23 @@ export default function NovoChamadoPage() {
           className="w-full border rounded p-2 text-gray-600"
           placeholder="Descreva sua solicitação"
         />
+
+        {temPrioridade && (
+          <div 
+            className="flex items-center gap-2"
+            title="Marque esta opção se sua solicitação é urgente" 
+          >
+            <label className="text-sm text-gray-700 flex items-center gap-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={priority}
+                disabled={!temPrioridade}
+                onChange={(e) => setPriority(e.target.checked)}
+              />
+              Hot-line
+            </label>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 text-gray-600">

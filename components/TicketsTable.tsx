@@ -1,6 +1,7 @@
 'use client';
 
 import { Ticket, TicketStatus } from "@/app/chamados/ChamadosClient";
+import { MdWarningAmber } from "react-icons/md";
 
 type Props = {
   tickets: Ticket[];
@@ -36,11 +37,10 @@ function formatDateTime(dateString?: string | null) {
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
-
 export function TicketsTable({ tickets, onRowClick }: Props) {
   return (
     <div className="overflow-x-auto border rounded">
-      <table className="w-full border-collapse min-w-[1400px]">
+      <table className="w-full border-separate min-w-[1400px]">
         <thead>
           <tr className="bg-gray-100 text-gray-600 text-left h-12">
             <th className="px-4">Nº</th>
@@ -58,27 +58,41 @@ export function TicketsTable({ tickets, onRowClick }: Props) {
         </thead>
 
         <tbody>
-          {tickets.map(ticket => (
-            <tr
-              key={ticket.id}
-              onClick={() => onRowClick(ticket.id)}
-              className="h-12 cursor-pointer hover:bg-gray-100 text-gray-400 bg-gray-50 "
-            >
-              <td className="px-4 whitespace-nowrap">{ticket.id}</td>
-              <td className={`px-4 whitespace-nowrap font-medium ${statusMap[ticket.status].color}`}>
-                {statusMap[ticket.status].label}
-              </td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.product}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.requester}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.company}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.cnpj}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.responsible}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.description}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.open_date)}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.updated_at ?? null)}</td>
-              <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.closed_date ?? null)}</td>
-            </tr>
-          ))}
+          {tickets.map(ticket => {
+            const temPrioridade = ticket.priority === '1';
+            return (
+              <tr
+                key={ticket.id}
+                onClick={() => onRowClick(ticket.id)}
+                className="h-12 cursor-pointer hover:bg-gray-100 text-gray-400 bg-gray-50"
+              >
+                <td className={`px-4 whitespace-nowrap font-medium`}>
+                  <div className="flex items-center gap-2">
+                    {temPrioridade && (
+                      <MdWarningAmber 
+                        className="text-red-600" 
+                        size={16}
+                        title="Chamado prioritário" 
+                      />
+                    )}
+                    <span>{ticket.id}</span>
+                  </div>
+                </td>
+                <td className={`px-4 whitespace-nowrap font-medium ${statusMap[ticket.status].color}`}>
+                  {statusMap[ticket.status].label}
+                </td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.product}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.requester}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.company}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.cnpj}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.responsible}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{ticket.description}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.open_date)}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.updated_at ?? null)}</td>
+                <td className="px-4 whitespace-nowrap truncate max-w-[160px]">{formatDateTime(ticket.closed_date ?? null)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

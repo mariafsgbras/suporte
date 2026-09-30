@@ -14,6 +14,7 @@ import {
   MdPerson,
   MdAssessment,
   MdSyncLock,
+  MdLocationCity
 } from 'react-icons/md';
 import { hasPermission } from '@/config/permissions';
 import { UserRole } from '@/types/role';
@@ -111,7 +112,7 @@ export function Sidebar() {
           {!collapsed && 'Sair'}
         </button>
         <p className='text-sm text-gray-300 mt-3'>
-          Versão 1.1.1
+          Versão 1.2.0
         </p>
       </div>
 
@@ -155,6 +156,14 @@ export function Sidebar() {
             href="/usuarios"
             label="Usuários Cadastrados"
             icon={<MdPerson size={20} />}
+            collapsed={collapsed}
+          />
+        }
+        {hasPermission(role, "empresas") && 
+          <MenuItem
+            href="/empresas"
+            label="Empresas Cadastradas"
+            icon={<MdLocationCity size={20} />}
             collapsed={collapsed}
           />
         }

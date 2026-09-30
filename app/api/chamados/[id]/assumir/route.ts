@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 export async function POST(
@@ -87,7 +87,8 @@ export async function POST(
       c.created_at AS opened_at,
       c.updated_at,
       c.closed_at,
-      t.tipo AS atendimento_tipo
+      t.tipo AS atendimento_tipo,
+      c.prioridade AS prioridade
     FROM chamados c
     JOIN empresas e ON e.id = c.empresa_id
     JOIN solicitantes s ON s.id = c.solicitante_id
