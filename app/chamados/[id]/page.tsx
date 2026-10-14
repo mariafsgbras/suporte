@@ -11,7 +11,7 @@ import { Toast } from '@/components/Toast';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { WarningModal } from '@/components/WarningModal';
 import { MdPriorityHigh } from 'react-icons/md';
-import { MdWarningAmber } from "react-icons/md";
+import { MdWarningAmber, MdWhatsapp } from "react-icons/md";
 
 type TicketStatus = 'open' | 'in_progress' | 'closed';
 
@@ -42,6 +42,36 @@ type Comment = {
   mensagem: string;
   created_at: string;
 };
+
+function buildWhatsappLink(ticket: Ticket): string | null {
+  let phone = (ticket.requester_phone ?? '').replace(/\D/g, '');
+  if (!phone) return null;
+
+  // sem DDI (DDD + número = 10 ou 11 dígitos) -> adiciona 55
+  if (phone.length === 10 || phone.length === 11) phone = '55' + phone;
+
+  const solicitante = ticket.requester;
+  const nome = ticket.responsible;
+  const apresentacao = `Faço parte da equipe SGBras e vou te auxiliar com seu chamado.`;
+
+  const saudacao = nome
+    ? `*${nome}:* Olá, ${solicitante}! ${apresentacao}`
+    : `Olá! ${apresentacao}`;
+
+  const descricao =
+    ticket.description.length > 500
+      ? ticket.description.slice(0, 500) + '...'
+      : ticket.description;
+
+  const text =
+    `${saudacao}\n` +
+    '\n' +
+    `*Chamado:* ${ticket.id}\n` +
+    `*Produto:* ${ticket.product}\n` +
+    `*Solicitação:* ${descricao}`;
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+}
 
 export default function ChamadoPage() {
   const { data: session } = useSession();
@@ -79,6 +109,7 @@ export default function ChamadoPage() {
   const [showTypeMessage, setShowTypeMessage] = useState(false);
 
   const temPrioridade = ticket?.prioridade === '1';
+  const emAtendimento = ticket?.status === "in_progress";
 
   useEffect(() => {
     if (!id) return;
@@ -145,6 +176,10 @@ export default function ChamadoPage() {
       </Layout>
     );
   }
+
+  const canWhatsapp =
+    session?.user.role === 'admin' || session?.user.role === 'atendente';
+  const whatsappLink = canWhatsapp ? buildWhatsappLink(ticket) : null;
 
   async function handleAssume(){
     if (!session || isCliente) return;
@@ -381,7 +416,23 @@ export default function ChamadoPage() {
 
             </div>  
           )}
-          <Info label="Telefone" value={ticket.requester_phone} />
+          <div>
+            <span className="text-sm text-gray-500">Telefone</span>
+            <div className="flex items-center gap-2">
+              <p className="font-medium">{ticket.requester_phone}</p>
+              {emAtendimento && whatsappLink && (
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Chamar no WhatsApp"
+                  className="p-1 rounded text-green-600 hover:bg-green-50 transition"
+                >
+                  <MdWhatsapp size={18} />
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="bg-white p-4 rounded border">
